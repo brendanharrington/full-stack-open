@@ -6,15 +6,15 @@ This is a GraphQL API for the Rate Repository application.
 
 ## ✔️ Requirements
 
-Works at least with Node version v16.19.0 (does not work currently eg. with Node v18.13.0). If you haven't installed Node or npm, [nvm](https://github.com/nvm-sh/nvm) is an easy to use tool for installing both. Nvm is also handy if you want to quickly switch between different Node versions.
+Works at least with Node version v20. If you haven't installed Node or npm, [nvm](https://github.com/nvm-sh/nvm) is an easy to use tool for installing both. Nvm is also handy if you want to quickly switch between different Node versions.
 
 ## 🚀 Getting started
 
-0. ensure that you are using the right Node version:
+0. ensure that you are using the right Node version, f. ex.:
 
 ```bash
 $ node -v
-v16.19.0
+v20.11.0
 ```
 
 1. Clone this repository and run `npm install` in the `rate-repository-api` directory.
