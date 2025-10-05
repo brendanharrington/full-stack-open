@@ -8,11 +8,18 @@ const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
 const Statistics = ({feedback}) => {
   const {good, neutral, bad} = feedback
+  const sum = good + neutral + bad;
+  const average = sum === 0 ? 0 : (good - bad) / sum
+  const positive = good === 0 ? 0 : (good / sum) * 100
+
   return (
     <div>
       <p>Good: {good}</p>
       <p>Neutral: {neutral}</p>
       <p>Bad: {bad}</p>
+      <p>All: {sum}</p>
+      <p>Average: {average}</p>
+      <p>Positive: {positive}%</p>
     </div>
   )
 }
