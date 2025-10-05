@@ -12,16 +12,18 @@ const Statistics = ({feedback}) => {
   const average = sum === 0 ? 0 : (good - bad) / sum
   const positive = good === 0 ? 0 : (good / sum) * 100
 
-  return (
-    <div>
-      <p>Good: {good}</p>
-      <p>Neutral: {neutral}</p>
-      <p>Bad: {bad}</p>
-      <p>All: {sum}</p>
-      <p>Average: {average}</p>
-      <p>Positive: {positive}%</p>
-    </div>
-  )
+  return sum === 0 
+    ? (<p>No feedback given</p>)
+    : (
+      <div>
+        <p>Good: {good}</p>
+        <p>Neutral: {neutral}</p>
+        <p>Bad: {bad}</p>
+        <p>All: {sum}</p>
+        <p>Average: {average}</p>
+        <p>Positive: {positive}%</p>
+      </div>
+    )
 }
 
 const App = () => {
