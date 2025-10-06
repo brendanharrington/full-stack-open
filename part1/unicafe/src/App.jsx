@@ -6,6 +6,12 @@ const Subheader = ({text}) => <h2>{text}</h2>
 
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
+const StatisticLine = ({text, value}) => {
+  return text === "Positive:"
+    ? (<p>{text} {value}%</p>)
+    : (<p>{text} {value}</p>)
+}
+
 const Statistics = ({feedback}) => {
   const {good, neutral, bad} = feedback
   const sum = good + neutral + bad;
@@ -16,12 +22,12 @@ const Statistics = ({feedback}) => {
     ? (<p>No feedback given</p>)
     : (
       <div>
-        <p>Good: {good}</p>
-        <p>Neutral: {neutral}</p>
-        <p>Bad: {bad}</p>
-        <p>All: {sum}</p>
-        <p>Average: {average}</p>
-        <p>Positive: {positive}%</p>
+        <StatisticLine text={'Good:'} value={good}/>
+        <StatisticLine text={'Neutral:'} value={neutral}/>
+        <StatisticLine text={'Bad:'} value={bad}/>
+        <StatisticLine text={'All:'} value={sum}/>
+        <StatisticLine text={'Average:'} value={average}/>
+        <StatisticLine text={'Positive:'} value={positive}/>
       </div>
     )
 }
