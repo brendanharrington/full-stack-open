@@ -7,9 +7,12 @@ const Subheader = ({text}) => <h2>{text}</h2>
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
 const StatisticLine = ({text, value}) => {
-  return text === "Positive:"
-    ? (<p>{text} {value}%</p>)
-    : (<p>{text} {value}</p>)
+  return (
+    <tr>
+      <th scope="row">{text}</th>
+      <td>{value}{text === "Positive:" && "%"}</td>
+    </tr>
+  )
 }
 
 const Statistics = ({feedback}) => {
@@ -21,14 +24,16 @@ const Statistics = ({feedback}) => {
   return sum === 0 
     ? (<p>No feedback given</p>)
     : (
-      <div>
-        <StatisticLine text={'Good:'} value={good}/>
-        <StatisticLine text={'Neutral:'} value={neutral}/>
-        <StatisticLine text={'Bad:'} value={bad}/>
-        <StatisticLine text={'All:'} value={sum}/>
-        <StatisticLine text={'Average:'} value={average}/>
-        <StatisticLine text={'Positive:'} value={positive}/>
-      </div>
+      <table style={{ textAlign: 'left' }}>
+        <tbody>
+          <StatisticLine text={'Good:'} value={good}/>
+          <StatisticLine text={'Neutral:'} value={neutral}/>
+          <StatisticLine text={'Bad:'} value={bad}/>
+          <StatisticLine text={'All:'} value={sum}/>
+          <StatisticLine text={'Average:'} value={average}/>
+          <StatisticLine text={'Positive:'} value={positive}/>
+        </tbody>
+      </table>
     )
 }
 
