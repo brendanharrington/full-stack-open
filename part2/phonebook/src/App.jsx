@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import axios from 'axios'
+import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import { useEffect } from 'react'
+
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -16,10 +16,10 @@ const App = () => {
     : persons.filter(person => person.name.toLowerCase().includes(nameFilter))
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
@@ -30,7 +30,11 @@ const App = () => {
     if (persons.find(person => person.name === personObj.name)) {
       alert(`${personObj.name} is already added to the phonebook`)
     } else {
-      setPersons(persons.concat(personObj))
+      personService
+        .create(personObj)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+        })
     }
 
     setNewName('')
