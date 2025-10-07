@@ -90,11 +90,12 @@ const App = () => {
         .replace(person.id, updatedPerson)
         .then(returnedPerson => {
           setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+          displayNotification(`Number for ${person.name} updated successfully!`, 'success')
         })
         .catch(error => {
           console.error('Error updating person:', error)
+          displayNotification(`Information for ${person.name} has already been removed from the server.`, 'error')
         })
-      displayNotification(`Number for ${person.name} updated successfully!`, 'success')
     }
   }
 
