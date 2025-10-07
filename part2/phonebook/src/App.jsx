@@ -25,10 +25,14 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const personObj = {name: newName, number: newNumber}
+    const personObj = { name: newName, number: newNumber }
 
-    if (persons.find(person => person.name === personObj.name)) {
+    const existingPerson = persons.find(p => p.name === personObj.name)
+
+    if (existingPerson && existingPerson.number === personObj.number) {
       alert(`${personObj.name} is already added to the phonebook`)
+    } else if (existingPerson && existingPerson.number !== personObj.number) {
+      handleReplace({ ...existingPerson, number: newNumber }) 
     } else {
       personService
         .create(personObj)
@@ -40,6 +44,7 @@ const App = () => {
     setNewName('')
     setNewNumber('')
   }
+
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -64,6 +69,21 @@ const App = () => {
         .remove(person)
         .then(() => {
           setPersons(persons.filter(p => p.id !== person.id))
+        })
+    }
+  }
+
+  const handleReplace = (person) => {
+    const updatedPerson = {...person, number: newNumber}
+
+    if(confirm(`${person.name} already exists in the phonebook. Replace the old number with a new one?`)) {
+      personService
+        .replace(person.id, updatedPerson)
+        .then(returnedPerson => {
+          setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+        })
+        .catch(error => {
+          console.error('Error updating person:', error)
         })
     }
   }
