@@ -1,7 +1,9 @@
-const Persons = ({ personsToShow }) => {
+import Person from './Person'
+
+const Persons = ({ personsToShow, handleDelete }) => {
   return (
     <ul style={{listStyleType: 'none', paddingInlineStart: 0}}>
-      {personsToShow.map(person => <li key={person.name}>{person.name} {person.number}</li>)}
+      {personsToShow.map(person => <Person key={person.name} person={person} handleDelete={handleDelete}/>)}
     </ul>
   )
 }
