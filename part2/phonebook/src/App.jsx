@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 import personService from './services/persons'
 
@@ -11,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [nameFilter, setNameFilter] = useState('')
+  const [notification, setNotification] = useState(null)
   const personsToShow = showAll
     ? persons
     : persons.filter(person => person.name.toLowerCase().includes(nameFilter))
@@ -23,6 +25,11 @@ const App = () => {
       })
   }, [])
 
+  const displayNotification = (message, type) => {
+    setNotification({ message, type })
+    setTimeout(() => setNotification(null), 5000)
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     const personObj = { name: newName, number: newNumber }
@@ -30,7 +37,7 @@ const App = () => {
     const existingPerson = persons.find(p => p.name === personObj.name)
 
     if (existingPerson && existingPerson.number === personObj.number) {
-      alert(`${personObj.name} is already added to the phonebook`)
+      displayNotification(`${newName} is already added to the phonebook`, 'error')
     } else if (existingPerson && existingPerson.number !== personObj.number) {
       handleReplace({ ...existingPerson, number: newNumber }) 
     } else {
@@ -39,6 +46,7 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
         })
+      displayNotification(`${newName} added successfully!`, 'success')
     }
 
     setNewName('')
@@ -70,6 +78,7 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter(p => p.id !== person.id))
         })
+      displayNotification(`${person.name} deleted successfully!`, 'success')
     }
   }
 
@@ -85,12 +94,14 @@ const App = () => {
         .catch(error => {
           console.error('Error updating person:', error)
         })
+      displayNotification(`Number for ${person.name} updated successfully!`, 'success')
     }
   }
 
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notification?.message} type={notification?.type} />
       <Filter onChange={handleFilterChange} />
       <h2>Add a new number</h2>
       <PersonForm 

@@ -2,7 +2,7 @@ import Person from './Person'
 
 const Persons = ({ personsToShow, handleDelete }) => {
   return (
-    <ul style={{listStyleType: 'none', paddingInlineStart: 0}}>
+    <ul>
       {personsToShow.map(person => <Person key={person.name} person={person} handleDelete={handleDelete}/>)}
     </ul>
   )
