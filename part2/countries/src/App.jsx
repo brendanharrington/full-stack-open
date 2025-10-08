@@ -24,7 +24,10 @@ function App() {
     <div>
       <h1>Countries Application</h1>
       <Filter handleFilterChange={handleFilterChange} />
-      <Countries countriesToShow={countriesToShow} />
+      <Countries 
+        countriesToShow={countriesToShow} 
+        setFilter={setFilter} 
+      />
     </div>
   )
 }
