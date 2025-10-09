@@ -60,6 +60,12 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
+  if (!persons.find(p => body.name === p.name)) {
+    return response.status(400).json({
+      error: `${body.name} already exists in the phonebook`
+    })
+  }
+
   const person = {
     id: generateId(),
     name: body.name,
