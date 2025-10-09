@@ -1,7 +1,14 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
+
+morgan.token('body', (req) => {
+  return req.method === 'POST' ? JSON.stringify(req.body) : ''
+})
+
+app.use(morgan(`:method :url :status :res[content-length] - :response-time ms :body`))
 
 let persons = [
   { 
@@ -60,7 +67,7 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (!persons.find(p => body.name === p.name)) {
+  if (persons.find(p => body.name === p.name)) {
     return response.status(400).json({
       error: `${body.name} already exists in the phonebook`
     })
