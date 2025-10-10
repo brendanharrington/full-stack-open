@@ -25,13 +25,13 @@ morgan.token('body', (req) => {
   return req.method === 'POST' ? JSON.stringify(req.body) : ''
 })
 
-app.use(morgan(`:method :url :status :res[content-length] - :response-time ms :body`))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   Person.countDocuments({})
     .then(count => {
       response.send(
@@ -44,12 +44,12 @@ app.get('/info', (request, response) => {
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons)
-  }) 
+  })
 })
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  
+
   if (!body.name) {
     return response.status(400).json({
       error: 'name missing'
@@ -105,9 +105,9 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
