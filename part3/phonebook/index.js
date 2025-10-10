@@ -52,13 +52,6 @@ app.get('/api/persons', (request, response) => {
   }) 
 })
 
-const generateId = () => {
-  const maxId = persons.length > 0
-    ? Math.max(...persons.map(p => Number(p.id)))
-    : 0
-  return String(maxId + 1) 
-}
-
 app.post('/api/persons', (request, response) => {
   const body = request.body
   
@@ -74,21 +67,14 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (persons.find(p => body.name === p.name)) {
-    return response.status(400).json({
-      error: `${body.name} already exists in the phonebook`
-    })
-  }
-
-  const person = {
-    id: generateId(),
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
+  })
 
-  persons = persons.concat(person)
-  
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -102,7 +88,7 @@ app.get('/api/persons/:id', (request, response) => {
     })
     .catch(error => {
       console.log(error)
-      response.status(404).end()
+      response.status(500).end()
     })
 })
 
