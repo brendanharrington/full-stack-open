@@ -2,24 +2,23 @@
 
 ## Overview  
 This repository contains my solutions for **Full Stack Open – Part 1: Introduction to React**, exercises **1.12–1.14**.  
-These exercises focus on building an interactive application that displays random programming-related anecdotes, allows users to vote for their favorites, and tracks which anecdote has the most votes.
+These exercises focus on rendering lists, updating state stored in arrays or objects, and adding interactivity through user-driven actions.
 
 ## Exercises  
 
-### 1.12: Displaying a Random Anecdote  
-The goal of this exercise is to create a React application that displays one anecdote at a time. Users can click a button to view a randomly selected anecdote from a predefined list.
+### 1.12: Rendering Anecdotes  
+The initial exercise introduces an application that displays a random anecdote from a predefined list each time the user clicks a button.
 
 **Concepts practiced:**  
-- Managing component state with `useState`  
-- Handling events to update displayed content  
-- Rendering dynamic content based on state  
-- Using arrays to store multiple data items  
+- Rendering data from arrays  
+- Generating random indices to display dynamic content  
+- Handling events to update displayed information  
 
-### 1.13–1.14: Voting and Most-Voted Anecdote  
-In these exercises, functionality is added to allow users to vote for anecdotes. The application tracks votes in state and displays both the current anecdote's votes and the anecdote with the highest number of votes.
+### 1.13–1.14: Voting and Tracking Favorites  
+These exercises extend the application to allow users to vote for anecdotes and display the anecdote with the highest number of votes. Votes are stored in an array and updated immutably to maintain React’s state principles.
 
 **Concepts practiced:**  
-- Updating state with objects and arrays  
-- Computing derived values (most-voted anecdote) from state  
-- Component decomposition (`Button`, `Anecdote`, `MostVoted`)  
-- Conditional rendering and dynamic content updates  
+- Managing arrays within state using `useState`  
+- Updating state immutably  
+- Computing and displaying derived state (most-voted anecdote)  
+- Conditional rendering based on user input  

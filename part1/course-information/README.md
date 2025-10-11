@@ -2,25 +2,24 @@
 
 ## Overview  
 This repository contains my solutions for **Full Stack Open – Part 1: Introduction to React**, exercises **1.1–1.5**.  
-These exercises introduce the fundamentals of building user interfaces with React, using components, props, and data structures to render dynamic content.
+These exercises introduce the fundamentals of building React applications using components and props by creating a simple course information display.
 
 ## Exercises  
 
-### 1.1–1.2: Course Information  
-The goal of these exercises is to create a simple React application that displays information about a course, including its name, parts, and the number of exercises for each part.  
+### 1.1–1.2: Component Basics  
+The goal of these exercises is to divide the UI into multiple React components such as `Header`, `Content`, and `Total`. Data is passed between these components using props to display the course name, parts, and exercise counts.
 
 **Concepts practiced:**  
-- Creating React components  
-- Using JSX syntax  
+- Creating functional React components  
 - Passing data via props  
-- Rendering dynamic data in the browser  
+- Rendering JSX elements dynamically  
+- Understanding component-based architecture  
 
-### 1.3–1.5: Course Information – Refactoring  
-In these exercises, the application is refactored into smaller, reusable components (`Header`, `Content`, `Part`, and `Total`).  
-The course data is organized into JavaScript objects and arrays, and the components are updated to render dynamically from that data.  
+### 1.3–1.5: Working with Data Structures  
+These exercises expand the application to use JavaScript objects and arrays to represent course information. The app dynamically calculates and displays the total number of exercises using array methods.
 
 **Concepts practiced:**  
-- Component decomposition  
-- Rendering lists  
-- Using objects and arrays to manage data  
-- Understanding component hierarchy and data flow
+- Using arrays and objects to manage data  
+- Rendering multiple components using the `map()` function  
+- Calculating derived values from arrays  
+- Improving code readability and modularity  

@@ -1,32 +1,23 @@
-# Course Information Application (Part 2)
+# Course Information Application  
 
 ## Overview  
 This repository contains my solutions for **Full Stack Open – Part 2: Communicating with Server**, exercises **2.1–2.5**.  
-These exercises expand on the Part 1 Course Information application by introducing more advanced React concepts, including modular component structure, props validation, and managing data stored on a server.
+These exercises extend the Part 1 Course Information app to handle more complex data structures and render multiple courses dynamically.
 
 ## Exercises  
 
-### 2.1–2.3: Refactoring the Course Component  
-The application is refactored to display information for multiple courses using reusable components. Each course includes its name, parts, and total exercises, rendered dynamically from data passed as props.
+### 2.1–2.3: Rendering Multiple Courses  
+The goal of these exercises is to modify the application to display multiple courses using arrays of objects. Each course includes a name, a list of parts, and the number of exercises per part.
 
 **Concepts practiced:**  
-- Rendering nested components  
-- Working with arrays of objects  
-- Using the `map()` function to dynamically create lists  
-- Structuring React components for scalability  
+- Rendering nested data structures with the `map()` function  
+- Passing complex props between components  
+- Breaking down large components into smaller reusable ones  
 
-### 2.4: Extracting Components  
-The application is further decomposed to improve maintainability. Components such as `Course`, `Header`, `Content`, and `Total` are made modular and reusable for handling multiple course objects.
-
-**Concepts practiced:**  
-- Component composition and reusability  
-- Prop drilling and data organization  
-- Keeping components small and focused  
-
-### 2.5: Displaying Multiple Courses  
-The final exercise adapts the app to handle **multiple courses** simultaneously, with each course rendered from data in an array of course objects. Each course displays its own list of parts and exercise totals.
+### 2.4–2.5: Calculating Totals  
+These exercises introduce the use of array methods such as `reduce()` to compute total exercises for each course dynamically. The app demonstrates clean separation of logic and presentation across components.
 
 **Concepts practiced:**  
-- Managing complex data structures in React  
-- Dynamic rendering of multiple data groups  
-- Passing arrays and objects as props 
+- Computing derived values using `reduce()`  
+- Managing component hierarchy and prop flow  
+- Structuring applications for clarity and scalability  
