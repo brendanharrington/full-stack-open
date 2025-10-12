@@ -1,4 +1,5 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
   {
@@ -39,6 +40,27 @@ const initialBlogs = [
   }
 ]
 
+const initialUsers = [
+  {
+    username: 'bren123',
+    name: 'Brendan Harrington',
+    passwordHash: '$2b$10$RltmRq8Q4o7qZp3pXW6lYeP87O7Te2QxkT1hPiO14SPQgyOKp9Pi2', // hashed version of 'password1'
+    blogs: [] // will reference blog ObjectIds later
+  },
+  {
+    username: 'janedoe',
+    name: 'Jane Doe',
+    passwordHash: '$2b$10$QnhSm6yO4hyyHcvNQO1D2OxZfAjyXl0E1fg9VmFGmYgThy8E1QzXa', // hashed version of 'securePass'
+    blogs: []
+  },
+  {
+    username: 'alex_dev',
+    name: 'Alex Developer',
+    passwordHash: '$2b$10$DgIzh/mI.dMk8n2vCVbFTuAVrKHQLURml.Yi0Xk5bD3y7whQ2v2Si', // hashed version of 'dev1234'
+    blogs: []
+  }
+]
+
 const nonExistingId = async () => {
   const blog = new Blog({
     title: "titletoberemoved",
@@ -57,4 +79,9 @@ const blogsInDb = async () => {
   return blogs.map(blog => blog.toJSON())
 }
 
-module.exports = { initialBlogs, nonExistingId, blogsInDb }
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
+}
+
+module.exports = { initialBlogs, nonExistingId, blogsInDb, initialUsers, usersInDb }
