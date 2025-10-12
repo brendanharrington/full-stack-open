@@ -5,6 +5,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const blog = require('../models/blog')
 
 const api = supertest(app)
 
@@ -108,6 +109,21 @@ test('delete a blog', async () => {
   assert(!titles.includes(blogToDelete.title))
 
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+})
+
+test('a blog\'s likes can be updated', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+
+  const updatedData = { ...blogToUpdate, likes: blogToUpdate.likes + 1 }
+
+  const result = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedData)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  assert.strictEqual(result.body.likes, blogToUpdate.likes + 1)
 })
 
 after(async () => {
