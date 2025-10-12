@@ -41,6 +41,27 @@ test('identifier field is named id', async () => {
   assert.strictEqual(blogs[0]._id, undefined)
 })
 
+test('a valid blog can be added', async () => {
+  const newBlog = {
+    title: 'A new blog entry',
+    author: 'Someone',
+    url: 'http://newblog.example.com',
+    likes: 4,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+
+  const titles = blogsAtEnd.map(blog => blog.title)
+  assert(titles.includes('A new blog entry'))
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
