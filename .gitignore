@@ -1,4 +1,4 @@
 *.code-workspace
 *.env
 *node_modules
-*frontend
+part3/phonebook/frontend
