@@ -33,6 +33,14 @@ test('a specific blog is within the returned blogs', async () => {
   assert.strictEqual(titles.includes('React patterns'), true)
 })
 
+test('identifier field is named id', async () => {
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+
+  assert(blogs[0].id)
+  assert.strictEqual(blogs[0]._id, undefined)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
