@@ -10,7 +10,7 @@ if (process.argv.length === 3 || process.argv.length === 4 || process.argv.lengt
   console.log('give title, author, url, and likes as the arguments')
 }
 
-const url = config.TEST_MONGODB_URI
+const url = config.MONGODB_URI
 
 mongoose.set('strictQuery',false)
 
