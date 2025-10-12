@@ -8,7 +8,7 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id)
-  if (note) {
+  if (blog) {
     response.json(blog)
   } else {
     response.status(404).end()
@@ -30,7 +30,7 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(requests.params.id)
+  await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
 })
 
