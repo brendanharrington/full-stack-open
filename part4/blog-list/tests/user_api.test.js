@@ -57,8 +57,93 @@ describe('when there is initially one user in db', () => {
       .expect('Content-Type', /application\/json/)
 
     const usersAtEnd = await helper.usersInDb()
-    assert(result.body.error.includes('expected `username` to be unique'))
 
+    // You can match either this or your custom message depending on your controller
+    assert(
+      result.body.error.includes('expected `username` to be unique') ||
+      result.body.error.includes('username must be unique')
+    )
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('creation fails with 400 if username is too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'ab',
+      name: 'Short User',
+      password: 'password123',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('username must be at least 3 characters'))
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('creation fails with 400 if password is too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'newuser',
+      name: 'Weak Password',
+      password: 'pw',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('password must be at least 3 characters'))
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('creation fails with 400 if username or password is missing', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const noPassword = {
+      username: 'nopassword',
+      name: 'Missing Password',
+    }
+
+    const noUsername = {
+      name: 'Missing Username',
+      password: 'something'
+    }
+
+    const result1 = await api
+      .post('/api/users')
+      .send(noPassword)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const result2 = await api
+      .post('/api/users')
+      .send(noUsername)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(
+      result1.body.error.includes('password must be at least 3') ||
+      result1.body.error.includes('password must be provided')
+    )
+    assert(
+      result2.body.error.includes('username must be at least 3') ||
+      result2.body.error.includes('username must be provided')
+    )
+
+    const usersAtEnd = await helper.usersInDb()
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
 })
