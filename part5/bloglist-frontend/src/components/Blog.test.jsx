@@ -37,4 +37,20 @@ describe('<Blog />', () => {
     expect(urlElement).toBeDefined()
     expect(likesElement).toBeDefined()
   })
+
+  test('clicking the button twice calls event handler twice', async () => {
+    const mockHandler = vi.fn()
+
+    const { container } = render(<Blog blog={blog} onLike={mockHandler} />)
+
+    const user = userEvent.setup()
+    const toggleButton = container.querySelector('.blog-toggle-btn')
+    await user.click(toggleButton)
+
+    const likeButton = container.querySelector('.like-btn')
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    expect(mockHandler.mock.calls).toHaveLength(2)
+  })
 })
