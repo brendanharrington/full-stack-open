@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -10,6 +11,8 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [notification, setNotification] = useState(null)
   const [user, setUser] = useState(null)
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -53,6 +56,7 @@ const App = () => {
 
   const addBlog = async (title, author, url) => {
     try {
+      blogFormRef.current.toggleVisibility()
       const newBlog = await blogService.create({ title, author, url })
       setBlogs(blogs.concat(newBlog))
       showNotification(`Added new blog: "${newBlog.title}" by ${newBlog.author}`, 'success')
@@ -66,8 +70,10 @@ const App = () => {
       <div>
         <h1>Blog List Application</h1>
         {notification && <Notification message={notification.message} type={notification.type}/>}
-        <h2>Login</h2>
-        <LoginForm onLogin={handleLogin} />
+        <Togglable buttonLabel='Login'>
+          <h2>Login</h2>
+          <LoginForm onLogin={handleLogin} />
+        </Togglable>
       </div>
     )
   }
@@ -78,8 +84,11 @@ const App = () => {
       {notification && <Notification message={notification.message} type={notification.type}/>}
       <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
 
-      <h2>Add Blog to List</h2>
-      <BlogForm onCreate={addBlog} />
+      <Togglable buttonLabel='Create new blog' ref={blogFormRef}>
+        <h2>Add Blog to List</h2>
+        <BlogForm onCreate={addBlog} />
+      </Togglable>
+
       
       <h2>Blogs</h2>
       {blogs.map(blog => (
