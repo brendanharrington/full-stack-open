@@ -1,5 +1,5 @@
 const Notification = ({ message, type }) => {
-  if (!message) return null;
+  if (!message) return null
 
   const className = type === 'success' ? 'notification success' : 'notification error'
 

@@ -83,7 +83,7 @@ const App = () => {
     try {
       await blogService.remove(id)
       setBlogs(blogs.filter(blog => blog.id !== id))
-      showNotification('Blog deleted successfully', 'success' )
+      showNotification('Blog deleted successfully', 'success')
     } catch (error) {
       showNotification(error.response?.data?.error || 'Failed to delete blog', 'error')
     }
@@ -94,7 +94,7 @@ const App = () => {
     return (
       <div>
         <h1>Blog List Application</h1>
-        {notification && <Notification message={notification.message} type={notification.type}/>}
+        {notification && <Notification message={notification.message} type={notification.type} />}
         <Togglable buttonLabel='Login'>
           <h2>Login</h2>
           <LoginForm onLogin={handleLogin} />
@@ -106,7 +106,7 @@ const App = () => {
   return (
     <div>
       <h1>Blog List Application</h1>
-      {notification && <Notification message={notification.message} type={notification.type}/>}
+      {notification && <Notification message={notification.message} type={notification.type} />}
       <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
 
       <Togglable buttonLabel='Create new blog' ref={blogFormRef}>
@@ -117,12 +117,12 @@ const App = () => {
       <h2>Blogs</h2>
       {blogs
         .slice()
-        .sort((a,b) => b.likes - a.likes)
+        .sort((a, b) => b.likes - a.likes)
         .map(blog => (
-        <div className='blog-container' key={`blog-container-${blog.id}`}>
-          <Blog blog={blog} onLike={addLike} onRemove={handleDelete} user={user} />
-        </div>
-      ))}
+          <div className='blog-container' key={`blog-container-${blog.id}`}>
+            <Blog blog={blog} onLike={addLike} onRemove={handleDelete} user={user} />
+          </div>
+        ))}
     </div>
   )
 }
