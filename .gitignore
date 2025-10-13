@@ -2,3 +2,4 @@
 *.env
 *node_modules
 part3/phonebook/frontend
+coverage/
