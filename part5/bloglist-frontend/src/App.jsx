@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -23,6 +24,11 @@ const App = () => {
     }
   }, [])
 
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type })
+    setTimeout(() => setNotification(null), 5000)
+  }
+
   const handleLogin = async (username, password) => {
     try {
       const user = await loginService.login({ username, password })
@@ -32,9 +38,9 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
+      showNotification(`Welcome back, ${user.name}!`, 'success')
     } catch {
-      setErrorMessage('wrong credentials')
-      setTimeout(() => setErrorMessage(null), 5000)
+      showNotification('Wrong credentials', 'error')
     }
   }
 
@@ -42,25 +48,24 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
     blogService.setToken(null)
     setUser(null)
+    showNotification('Logged out successfully', 'success')
   }
 
-  const addBlog = (title, author, url) => {
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url
+  const addBlog = async (title, author, url) => {
+    try {
+      const newBlog = await blogService.create({ title, author, url })
+      setBlogs(blogs.concat(newBlog))
+      showNotification(`Added new blog: "${newBlog.title}" by ${newBlog.author}`, 'success')
+    } catch {
+      showNotification('Could not add blog to the list', 'error')
     }
-
-    blogService.create(blogObject).then(returnedBlog => {
-      setBlogs(blogs.concat(returnedBlog))
-    })
   }
 
   if (!user) {
     return (
       <div>
         <h1>Blog List Application</h1>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {notification && <Notification message={notification.message} type={notification.type}/>}
         <h2>Login</h2>
         <LoginForm onLogin={handleLogin} />
       </div>
@@ -70,7 +75,7 @@ const App = () => {
   return (
     <div>
       <h1>Blog List Application</h1>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {notification && <Notification message={notification.message} type={notification.type}/>}
       <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
 
       <h2>Add Blog to List</h2>
