@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -8,9 +9,6 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -46,8 +44,7 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = event => {
-    event.preventDefault()
+  const addBlog = (title, author, url) => {
     const blogObject = {
       title: title,
       author: author,
@@ -56,9 +53,6 @@ const App = () => {
 
     blogService.create(blogObject).then(returnedBlog => {
       setBlogs(blogs.concat(returnedBlog))
-      setTitle('')
-      setAuthor('')
-      setUrl('')
     })
   }
 
@@ -80,39 +74,7 @@ const App = () => {
       <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
 
       <h2>Add Blog to List</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          <label>
-            Title:
-            <input 
-              type="text"
-              value={title}
-              onChange={({ target }) => setTitle(target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Author:
-            <input 
-              type="text"
-              value={author}
-              onChange={({ target }) => setAuthor(target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            URL:
-            <input 
-              type="text"
-              value={url}
-              onChange={({ target }) => setUrl(target.value)}
-            />
-          </label>
-        </div>
-        <button type="submit">Create</button>
-      </form>
+      <BlogForm onCreate={addBlog} />
       
       <h2>Blogs</h2>
       {blogs.map(blog => (
