@@ -119,9 +119,7 @@ const App = () => {
         .slice()
         .sort((a, b) => b.likes - a.likes)
         .map(blog => (
-          <div className='blog-container' key={`blog-container-${blog.id}`}>
-            <Blog blog={blog} onLike={addLike} onRemove={handleDelete} user={user} />
-          </div>
+          <Blog key={blog.id} blog={blog} onLike={addLike} onRemove={handleDelete} user={user} />
         ))}
     </div>
   )

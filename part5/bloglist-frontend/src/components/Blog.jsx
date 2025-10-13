@@ -17,9 +17,9 @@ const Blog = ({ blog, onLike, onRemove, user }) => {
     user && blog.user && user.username === blog.user.username
 
   return (
-    <div className="blog">
+    <div className='blog-container'>
       {blog.title} {blog.author}
-      <button onClick={toggleVisibility} className="blog-toggle-btn">
+      <button onClick={toggleVisibility} className='blog-toggle-btn'>
         {displayDetails ? 'hide' : 'view'}
       </button>
 
