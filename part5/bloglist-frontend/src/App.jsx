@@ -75,9 +75,20 @@ const App = () => {
       const returnedBlog = await blogService.update(blog.id, updatedBlog)
       setBlogs(blogs.map(b => b.id === blog.id ? returnedBlog : b))
     } catch {
-      showNotification({ message: 'Could not update likes', type: 'error'})
+      showNotification('Could not update likes', 'error')
     }
   }
+
+  const handleDelete = async (id) => {
+    try {
+      await blogService.remove(id)
+      setBlogs(blogs.filter(blog => blog.id !== id))
+      showNotification('Blog deleted successfully', 'success' )
+    } catch (error) {
+      showNotification(error.response?.data?.error || 'Failed to delete blog', 'error')
+    }
+  }
+
 
   if (!user) {
     return (
@@ -109,7 +120,7 @@ const App = () => {
         .sort((a,b) => b.likes - a.likes)
         .map(blog => (
         <div className='blog-container' key={`blog-container-${blog.id}`}>
-          <Blog blog={blog} onLike={addLike} />
+          <Blog blog={blog} onLike={addLike} onRemove={handleDelete} user={user} />
         </div>
       ))}
     </div>
