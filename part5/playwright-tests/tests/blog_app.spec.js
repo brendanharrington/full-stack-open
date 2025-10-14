@@ -106,6 +106,13 @@ describe('Blog app', () => {
         await page.getByRole('button', { name: 'Delete' }).click()
         await expect(page.getByText(`${firstBlog.title} ${firstBlog.author}`)).toBeHidden()
       })
+
+      test('only the user who added the blog can delete it', async ({ page }) => {
+        await page.getByRole('button', { name: 'Logout' }).click()
+        await loginWith(page, 'root', 'password')
+        await page.getByRole('button', { name: 'view' }).nth(0).click()
+        await expect(page.getByRole('button', { name: 'Delete' })).toBeHidden()
+      })
     })
   })
 })
