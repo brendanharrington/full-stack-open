@@ -90,11 +90,21 @@ describe('Blog app', () => {
       })
       
       test('the first blog can be liked', async ({ page }) => {
-        const viewButton = await page.getByRole('button', { name: 'view' }).nth(0)
-        await viewButton.click()
-        const likeButton = await page.getByRole('button', { name: 'like' })
-        await likeButton.click()
+        await page.getByRole('button', { name: 'view' }).nth(0).click()
+        await page.getByRole('button', { name: 'like' }).click()
         await expect(page.getByText('likes 1')).toBeVisible()
+      })
+
+      test('the first blog can be deleted', async ({ page }) => {
+        await page.getByRole('button', { name: 'view' }).nth(0).click()
+
+        page.once('dialog', async dialog => {
+          expect(dialog.type()).toBe('confirm')
+          await dialog.accept() 
+        })
+
+        await page.getByRole('button', { name: 'Delete' }).click()
+        await expect(page.getByText(`${firstBlog.title} ${firstBlog.author}`)).toBeHidden()
       })
     })
   })
