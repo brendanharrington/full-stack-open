@@ -113,6 +113,32 @@ describe('Blog app', () => {
         await page.getByRole('button', { name: 'view' }).nth(0).click()
         await expect(page.getByRole('button', { name: 'Delete' })).toBeHidden()
       })
+
+      test('blogs are arranged in order according to their likes', async ({ page }) => {
+        const blogs = await page.locator('.blog-container').all()
+        for (const blog of blogs) {
+          const toggleButton = blog.getByRole('button', { name: /view|hide/ })
+          await toggleButton.click()
+        }
+
+        for (const blog of blogs) {
+          const likeButton = blog.getByRole('button', { name: 'like' })
+          const randomLikes = Math.floor(Math.random() * 6) 
+          for (let i = 0; i < randomLikes; i++) {
+            await likeButton.click()
+            await page.waitForTimeout(100)
+          }
+        }
+
+        const likeElements = await page.locator('text=/likes\\s\\d+/').all()
+        const likeTexts = await Promise.all(likeElements.map(el => el.textContent()))
+        const likeNumbers = likeTexts.map(text => Number(text.match(/\d+/)[0]))
+
+        console.log('Like counts per blog (randomized):', likeNumbers)
+
+        const sorted = [...likeNumbers].sort((a, b) => b - a)
+        expect(likeNumbers).toEqual(sorted)
+      })
     })
   })
 })
