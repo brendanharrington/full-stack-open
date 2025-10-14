@@ -1,9 +1,10 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post('http://localhost:3003/api/testing/reset')
-    await request.post('http://localhost:3003/api/users', {
+    await request.post('/api/testing/reset')
+    await request.post('/api/users', {
       data: {
         name: 'Brendan Harrington',
         username: 'brendan',
@@ -11,75 +12,44 @@ describe('Blog app', () => {
       }
     })
 
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
   })
 
   test('Login button is shown', async ({ page }) => {
-    const locator = page.getByRole('button', { name: 'Login' })
-    await expect(locator).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Login' })).toBeVisible()
   })
 
   test('Login form is shown after clicking login', async ({ page }) => {
     await page.getByRole('button', { name: 'Login' }).click()
-
-    const locator = page.getByRole('heading', { name: 'Login' })
-    await expect(locator).toBeVisible()
-  })
-  
-  test('form is shown after clicking login button', async ({ page }) => {
-    await page.getByRole('button', { name: 'Login' }).click()
-
-    const locator = page.getByRole('heading', { name: 'Login' })
-    await expect(locator).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible()
   })
 
   describe('Login', () => {
-    beforeEach( async ({ page }) => {
-      await page.getByRole('button', { name: 'Login' }).click()
-    })
-
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByLabel('Username').fill('brendan')
-      await page.getByLabel('Password').fill('password')
-      await page.getByRole('button', { name: 'Login' }).click()
-      
-      const locator = page.getByText('Brendan Harrington logged in')
-      await expect(locator).toBeVisible()
+      await loginWith(page, 'brendan', 'password')
+      await expect(page.getByText('Brendan Harrington logged in')).toBeVisible()
     })
 
     test('fails with incorrect credentials', async ({ page }) => {
-      await page.getByLabel('Username').fill('brendan')
-      await page.getByLabel('Password').fill('wrongpassword')
-      await page.getByRole('button', { name: 'Login' }).click()
-      
-      const locator = page.getByText('Wrong credentials')
-      await expect(locator).toBeVisible()
+      await loginWith(page, 'brendan', 'wrongpassword')
+      await expect(page.getByText('Wrong credentials')).toBeVisible()
     })
   })
 
   describe('When logged in', () => {
     const blog = {
-      title: 'Title of a New Blog',
-      author: 'Author of a New Blog',
+      title: 'Blog Post by Playwright',
+      author: 'Playwright',
       url: 'www.new-blog.com'
     }
 
     beforeEach( async ({ page }) => {
-      await page.getByRole('button', { name: 'Login' }).click()
-      await page.getByLabel('Username').fill('brendan')
-      await page.getByLabel('Password').fill('password')
-      await page.getByRole('button', { name: 'Login' }).click()
+      await loginWith(page, 'brendan', 'password')
     })
 
     test('a new blog can be added', async ({ page }) => {
-      await page.getByRole('button', { name: 'Create new blog' }).click()
-      await page.getByLabel('Title:').fill(blog.title)
-      await page.getByLabel('Author:').fill(blog.author)
-      await page.getByLabel('URL:').fill(blog.url)
-      await page.getByRole('button', { name: 'Create' }).click()
-
-      const locator = page.getByText(`${blog.title} ${blog.author}`)
-      await expect(locator).toBeVisible()
+      await createBlog(page, blog)
+      await expect(page.getByText(`${blog.title} ${blog.author}`)).toBeVisible()
     })
   })
 })
