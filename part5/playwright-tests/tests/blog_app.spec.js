@@ -6,7 +6,7 @@ describe('Blog app', () => {
     await request.post('http://localhost:3003/api/users', {
       data: {
         name: 'Brendan Harrington',
-        username: 'brendanharrington',
+        username: 'brendan',
         password: 'password'
       }
     })
@@ -39,7 +39,7 @@ describe('Blog app', () => {
     })
 
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByLabel('Username').fill('brendanharrington')
+      await page.getByLabel('Username').fill('brendan')
       await page.getByLabel('Password').fill('password')
       await page.getByRole('button', { name: 'Login' }).click()
       
@@ -48,11 +48,37 @@ describe('Blog app', () => {
     })
 
     test('fails with incorrect credentials', async ({ page }) => {
-      await page.getByLabel('Username').fill('brendanharrington')
+      await page.getByLabel('Username').fill('brendan')
       await page.getByLabel('Password').fill('wrongpassword')
       await page.getByRole('button', { name: 'Login' }).click()
       
       const locator = page.getByText('Wrong credentials')
+      await expect(locator).toBeVisible()
+    })
+  })
+
+  describe('When logged in', () => {
+    const blog = {
+      title: 'Title of a New Blog',
+      author: 'Author of a New Blog',
+      url: 'www.new-blog.com'
+    }
+
+    beforeEach( async ({ page }) => {
+      await page.getByRole('button', { name: 'Login' }).click()
+      await page.getByLabel('Username').fill('brendan')
+      await page.getByLabel('Password').fill('password')
+      await page.getByRole('button', { name: 'Login' }).click()
+    })
+
+    test('a new blog can be added', async ({ page }) => {
+      await page.getByRole('button', { name: 'Create new blog' }).click()
+      await page.getByLabel('Title:').fill(blog.title)
+      await page.getByLabel('Author:').fill(blog.author)
+      await page.getByLabel('URL:').fill(blog.url)
+      await page.getByRole('button', { name: 'Create' }).click()
+
+      const locator = page.getByText(`${blog.title} ${blog.author}`)
       await expect(locator).toBeVisible()
     })
   })
