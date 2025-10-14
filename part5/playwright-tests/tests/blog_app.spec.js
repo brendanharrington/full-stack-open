@@ -11,6 +11,13 @@ describe('Blog app', () => {
         password: 'password'
       }
     })
+    await request.post('/api/users', {
+      data: {
+        name: 'Superuser',
+        username: 'root',
+        password: 'password'
+      }
+    })
 
     await page.goto('/')
   })
@@ -37,19 +44,58 @@ describe('Blog app', () => {
   })
 
   describe('When logged in', () => {
-    const blog = {
-      title: 'Blog Post by Playwright',
+    const firstBlog = {
+      title: 'First Blog Post',
       author: 'Playwright',
-      url: 'www.new-blog.com'
+      url: 'www.first-blog.com'
     }
 
-    beforeEach( async ({ page }) => {
+    const secondBlog = {
+      title: 'Second Blog Post',
+      author: 'Playwright',
+      url: 'www.second-blog.com'
+    }
+
+    const thirdBlog = {
+      title: 'Third Blog Post',
+      author: 'Playwright',
+      url: 'www.third-blog.com'
+    }
+
+    beforeEach(async ({ page }) => {
       await loginWith(page, 'brendan', 'password')
     })
 
+    test('user can log out', async ({ page }) => {
+      await page.getByRole('button', { name: 'Logout' }).click()
+      await expect(page.getByText('Logged out successfully')).toBeVisible()
+    })
+
     test('a new blog can be added', async ({ page }) => {
-      await createBlog(page, blog)
-      await expect(page.getByText(`${blog.title} ${blog.author}`)).toBeVisible()
+      await createBlog(page, firstBlog)
+      await expect(page.getByText(`${firstBlog.title} ${firstBlog.author}`)).toBeVisible()
+    })
+
+    describe('and several blogs are added', () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(page, firstBlog)
+        await createBlog(page, secondBlog)
+        await createBlog(page, thirdBlog)
+      })
+
+      test('each blog exists', async ({ page }) => {
+        await expect(page.getByText(`${firstBlog.title} ${firstBlog.author}`)).toBeVisible()
+        await expect(page.getByText(`${secondBlog.title} ${secondBlog.author}`)).toBeVisible()
+        await expect(page.getByText(`${thirdBlog.title} ${thirdBlog.author}`)).toBeVisible()
+      })
+      
+      test('the first blog can be liked', async ({ page }) => {
+        const viewButton = await page.getByRole('button', { name: 'view' }).nth(0)
+        await viewButton.click()
+        const likeButton = await page.getByRole('button', { name: 'like' })
+        await likeButton.click()
+        await expect(page.getByText('likes 1')).toBeVisible()
+      })
     })
   })
 })
