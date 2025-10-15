@@ -23,7 +23,22 @@ const reducer = (state = initialState, action) => {
   console.log('state now: ', state)
   console.log('action', action)
 
-  return state
+  switch(action.type) {
+    case 'VOTE': {
+      const { id } = action.payload
+      const anecdoteToChange = state.find(a => a.id === id)
+      const changedAnecdote = {
+        ...anecdoteToChange, votes: anecdoteToChange.votes + 1
+      }
+      return state.map(a => (a.id !== id ? a : changedAnecdote))
+    }
+    case 'NEW-ANECDOTE': {
+      const { content } = action.payload
+      return [...state, asObject(content)]
+    }
+    default:
+      return state
+  }
 }
 
 export default reducer
