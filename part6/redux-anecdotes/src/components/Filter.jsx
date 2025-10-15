@@ -8,8 +8,12 @@ const Filter = () => {
     dispatch(setFilter(event.target.value))
   }
 
+  const style = {
+    marginBottom: 20
+  }
+
   return (
-    <div>
+    <div style={style}>
       <label>
         filter
         <input type="text" onChange={handleChange} />
