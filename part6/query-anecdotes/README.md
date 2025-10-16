@@ -1,16 +1,38 @@
-# React + Vite
+# Query Anecdotes  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview  
 
-Currently, two official plugins are available:
+This repository contains my solutions for **Full Stack Open – Part 6**, exercises **6.20–6.24**, where the anecdotes application is refactored to use **React Query** and **Context + useReducer**.  
+The backend is managed via `json-server`, and the frontend fetches, updates, and synchronizes data using React Query, while notifications are handled globally through Context. :contentReference[oaicite:2]{index=2}
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Exercises  
 
-## React Compiler
+### 6.20–6.22: React Query Data Management  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Refactor the app to use **React Query** for managing server data:
 
-## Expanding the ESLint configuration
+- Use `useQuery` to fetch anecdotes from the backend.  
+- Handle loading and error states for server communication.  
+- Use `useMutation` for creating new anecdotes and voting.  
+- Invalidate queries to keep data synchronized after mutations.  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Concepts practiced:**  
+
+- Using `useQuery` and `useMutation` hooks  
+- Handling query invalidation and automatic cache updates  
+- Managing asynchronous server communication  
+- Testing error states and retry logic
+
+### 6.23–6.24: Notifications and Error Handling  
+
+Implement a global notification system with **Context + useReducer** and display errors:
+
+- Show notifications when a new anecdote is added or voted.  
+- Automatically clear notifications after 5 seconds.  
+- Display error messages when backend requests fail (e.g., API rejects short anecdotes).  
+
+**Concepts practiced:**  
+
+- Setting up global state with **Context API** and `useReducer`  
+- Dispatching actions for notifications  
+- Error handling in asynchronous UI logic  
