@@ -1,4 +1,4 @@
-import { useState, useEffect, createRef } from 'react'
+import { useEffect, createRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import loginService from './services/login'
@@ -10,20 +10,20 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { showNotification } from './reducers/notificationReducer'
 import { initializeBlogs, appendBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
+import { setUser, clearUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
 
-  const [user, setUser] = useState(null)
-
   const blogs = useSelector(state => state.blogs)
+  const user = useSelector(state => state.user)
 
   useEffect(() => { dispatch(initializeBlogs()) }, [dispatch])
 
   useEffect(() => {
     const user = storage.loadUser()
     if (user) {
-      setUser(user)
+      dispatch(setUser(user))
     }
   }, [])
 
@@ -32,8 +32,8 @@ const App = () => {
   const handleLogin = async (credentials) => {
     try {
       const user = await loginService.login(credentials)
-      setUser(user)
       storage.saveUser(user)
+      dispatch(setUser(user))
       dispatch(showNotification(`Welcome back, ${user.name}`, 'success', 5))
     } catch (error) {
       dispatch(showNotification('Wrong credentials', 'error', 5))
@@ -52,7 +52,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    setUser(null)
+    dispatch(clearUser())
     storage.removeUser()
     dispatch(showNotification(`Bye, ${user.name}!`, 'success', 5))
   }
