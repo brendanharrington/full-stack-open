@@ -1,4 +1,8 @@
-const Notification = ({ notification }) => {
+import { useNotificationValue } from '../NotificationContext'
+
+const Notification = () => {
+  const notification = useNotificationValue()
+
   if (!notification) {
     return null
   }
@@ -11,6 +15,7 @@ const Notification = ({ notification }) => {
     padding: '10px',
     border: '2px solid',
     borderColor: type === 'success' ? 'green' : 'red',
+    color: type === 'success' ? 'green' : 'red',
     borderRadius: '5px',
   }
 
