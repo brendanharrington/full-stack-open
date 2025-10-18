@@ -12,13 +12,14 @@ const Notification = () => {
     margin: '10px',
     padding: '10px',
     border: '2px solid',
-    // borderColor: type === 'success' ? 'green' : 'red',
+    borderColor: notification.type === 'success' ? 'green' : 'red',
+    color: notification.type === 'success' ? 'green' : 'red',
     borderRadius: '5px',
   }
 
   return (
     <div style={style}>
-      {notification}
+      {notification.message}
     </div>
   )
 }

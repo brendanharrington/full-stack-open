@@ -37,16 +37,16 @@ const App = () => {
       const user = await loginService.login(credentials)
       setUser(user)
       storage.saveUser(user)
-      dispatch(showNotification(`Welcome back, ${user.name}`, 5))
+      dispatch(showNotification(`Welcome back, ${user.name}`, 'success', 5))
     } catch (error) {
-      dispatch(showNotification('Wrong credentials', 5))
+      dispatch(showNotification('Wrong credentials', 'error', 5))
     }
   }
 
   const handleCreate = async (blog) => {
     const newBlog = await blogService.create(blog)
     setBlogs(blogs.concat(newBlog))
-    dispatch(showNotification(`Blog created: ${newBlog.title}, ${newBlog.author}`, 5))
+    dispatch(showNotification(`Blog created: ${newBlog.title}, ${newBlog.author}`, 'success', 5))
     blogFormRef.current.toggleVisibility()
   }
 
@@ -57,21 +57,21 @@ const App = () => {
       likes: blog.likes + 1
     })
 
-    dispatch(showNotification(`You liked ${updatedBlog.title} by ${updatedBlog.author}`, 5))
+    dispatch(showNotification(`You liked ${updatedBlog.title} by ${updatedBlog.author}`, 'success', 5))
     setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b))
   }
 
   const handleLogout = () => {
     setUser(null)
     storage.removeUser()
-    dispatch(showNotification(`Bye, ${user.name}!`, 5))
+    dispatch(showNotification(`Bye, ${user.name}!`, 'success', 5))
   }
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.remove(blog.id)
       setBlogs(blogs.filter(b => b.id !== blog.id))
-      dispatch(showNotification(`Blog ${blog.title}, by ${blog.author} removed`, 5))
+      dispatch(showNotification(`Blog ${blog.title}, by ${blog.author} removed`, 'error', 5))
     }
   }
 
