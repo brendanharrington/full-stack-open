@@ -1,14 +1,15 @@
 import { useState, forwardRef, useImperativeHandle } from 'react'
+import { useLocation } from 'react-router-dom'
 
 const Togglable = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false)
-
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
+  const location = useLocation()
 
   const toggleVisibility = () => {
     setVisible(!visible)
   }
+
+  const isRoot = location.pathname === '/'
 
   useImperativeHandle(ref, () => {
     return {
@@ -16,15 +17,33 @@ const Togglable = forwardRef((props, ref) => {
     }
   })
 
+  if (!isRoot) return null
+
   return (
-    <div>
-      <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
-      </div>
-      <div style={showWhenVisible}>
-        {props.children}
-        <button onClick={toggleVisibility}>cancel</button>
-      </div>
+    <div className="mb-3">
+      {!visible && (
+        <div className="mb-2">
+          <button
+            className="btn btn-primary"
+            onClick={toggleVisibility}
+          >
+            {props.buttonLabel}
+          </button>
+        </div>
+      )}
+      {visible && (
+        <div className="card">
+          <div className="card-body">
+            {props.children}
+            <button
+              className="btn btn-secondary mt-3"
+              onClick={toggleVisibility}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 })

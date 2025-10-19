@@ -1,35 +1,40 @@
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { Table, Container } from 'react-bootstrap'
 
 const UserList = () => {
   const users = useSelector(state => state.users)
 
-  const style = {
-    textAlign: 'center'
-  }
-
-  if (!users) return <div>Loading users...</div>
+  if (!users) return <div className="text-center mt-4">Loading users...</div>
 
   return (
-    <div>
-      <h2>Users</h2>
-      <table style={style}>
-        <thead>
+    <Container className="mt-4">
+      <h2 className="text-center mb-4">Users</h2>
+
+      <Table bordered hover responsive="md" className="text-center shadow-sm">
+        <thead className="table-light">
           <tr>
-            <th scope='col'>User</th>
-            <th scope='col'>Blogs Created</th>
+            <th>User</th>
+            <th>Blogs Created</th>
           </tr>
         </thead>
         <tbody>
           {users.map(user => (
             <tr key={user.id}>
-              <td><Link to={`/users/${user.id}`}>{user.name}</Link></td>
+              <td>
+                <Link
+                  to={`/users/${user.id}`}
+                  className="text-decoration-none fw-semibold"
+                >
+                  {user.name}
+                </Link>
+              </td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </Table>
+    </Container>
   )
 }
 

@@ -18,6 +18,9 @@ import { initializeBlogs, appendBlog, likeBlog, deleteBlog } from './reducers/bl
 import { initializeUsers } from './reducers/usersReducer'
 import { setUser, clearUser } from './reducers/userReducer'
 
+import { Container, Row, Col, Card } from 'react-bootstrap'
+
+
 const App = () => {
   const dispatch = useDispatch()
 
@@ -76,7 +79,7 @@ const App = () => {
   if (!user) {
     return (
       <div>
-        <h1>blogs</h1>
+        <h1 className="mt-5 text-center">Blog List Application</h1>
         <Notification />
         <Login doLogin={handleLogin} />
       </div>
@@ -84,23 +87,29 @@ const App = () => {
   }
 
   return (
-    <div>
-      <Router>
-        <Menu {...{ handleLogout }} />
-        <h1>blogs</h1>
+    <Router>
+      <Menu handleLogout={handleLogout} />
+      <Container className="mt-4 mb-5">
         <Notification />
-        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-          <NewBlog doCreate={handleCreate} />
-        </Togglable>
 
-        <Routes>
-          <Route path='/' element={<BlogList {...{ blogs }} />} />
-          <Route path='/users' element={<UserList />} />
-          <Route path='/users/:id' element={<User />} />
-          <Route path='/blogs/:id' element={<BlogView {...{ handleLike, handleDelete }}/>} />
-        </Routes>
-      </Router>
-    </div>
+        <Row>
+          <Col md={8} className="mx-auto">
+            <h2 className="display-5 text-center mb-4">Blog List Application</h2>
+
+            <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
+              <NewBlog doCreate={handleCreate} />
+            </Togglable>
+
+            <Routes>
+              <Route path="/" element={<BlogList blogs={blogs} />} />
+              <Route path="/users" element={<UserList />} />
+              <Route path="/users/:id" element={<User />} />
+              <Route path="/blogs/:id" element={<BlogView handleLike={handleLike} handleDelete={handleDelete} />} />
+            </Routes>
+          </Col>
+        </Row>
+      </Container>
+    </Router>
   )
 }
 
