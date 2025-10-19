@@ -1,10 +1,12 @@
-import { useState, useEffect, createRef } from 'react'
+import { createRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { useNotificationDispatch } from './NotificationContext'
+import { useUserValue, useUserDispatch } from './UserContext'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './services/storage'
+
 import Login from './components/Login'
 import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
@@ -13,14 +15,15 @@ import Togglable from './components/Togglable'
 
 const App = () => {
   const queryClient = useQueryClient()
-  const dispatch = useNotificationDispatch()
-
-  const [user, setUser] = useState(null)
+  const notify = useNotificationDispatch()
+  const userDispatch = useUserDispatch()
+  const user = useUserValue()
+  const blogFormRef = createRef()
 
   const setNotification = (message, type = 'success') => {
-    dispatch({ type: 'SET', payload: { message, type } })
+    notify({ type: 'SET', payload: { message, type } })
     setTimeout(() => {
-      dispatch({ type: 'CLEAR' })
+      notify({ type: 'CLEAR' })
     }, 5000)
   }
 
@@ -53,21 +56,12 @@ const App = () => {
     }
   })
 
-  useEffect(() => {
-    const user = storage.loadUser()
-    if (user) {
-      setUser(user)
-    }
-  }, [])
-
-  const blogFormRef = createRef()
-
   const handleLogin = async (credentials) => {
     try {
-      const user = await loginService.login(credentials)
-      setUser(user)
-      storage.saveUser(user)
-      setNotification(`Welcome back, ${user.name}`)
+      const loggedUser = await loginService.login(credentials)
+      storage.saveUser(loggedUser)
+      userDispatch({ type: 'SET', payload: loggedUser })
+      setNotification(`Welcome back, ${loggedUser.name}`)
     } catch (error) {
       setNotification('Wrong credentials', 'error')
     }
@@ -82,8 +76,8 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    setUser(null)
     storage.removeUser()
+    userDispatch({ type: 'CLEAR' })
     setNotification(`Bye, ${user.name}!`)
   }
 
@@ -130,7 +124,6 @@ const App = () => {
       </div>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
-        {/* <NewBlog /> */}
       </Togglable>
       {blogs.sort(byLikes).map(blog =>
         <Blog
