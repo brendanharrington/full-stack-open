@@ -1,6 +1,6 @@
 import { useEffect, createRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import loginService from './services/login'
 import storage from './services/storage'
@@ -12,6 +12,7 @@ import BlogList from './components/BlogList'
 import UserList from './components/UserList'
 import User from './components/User'
 import BlogView from './components/BlogView'
+import Menu from './components/Menu'
 import { showNotification } from './reducers/notificationReducer'
 import { initializeBlogs, appendBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
 import { initializeUsers } from './reducers/usersReducer'
@@ -85,14 +86,9 @@ const App = () => {
   return (
     <div>
       <Router>
+        <Menu {...{ handleLogout }} />
         <h1>blogs</h1>
         <Notification />
-        <div>
-          {user.name} logged in
-          <button onClick={handleLogout}>
-            logout
-          </button>
-        </div>
         <Togglable buttonLabel="create new blog" ref={blogFormRef}>
           <NewBlog doCreate={handleCreate} />
         </Togglable>
