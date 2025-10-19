@@ -1,13 +1,15 @@
 import { useEffect, createRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import loginService from './services/login'
 import storage from './services/storage'
 import Login from './components/Login'
-import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import BlogList from './components/BlogList'
+import UserList from './components/UserList'
 import { showNotification } from './reducers/notificationReducer'
 import { initializeBlogs, appendBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
 import { setUser, clearUser } from './reducers/userReducer'
@@ -67,7 +69,7 @@ const App = () => {
   if (!user) {
     return (
       <div>
-        <h2>blogs</h2>
+        <h1>blogs</h1>
         <Notification />
         <Login doLogin={handleLogin} />
       </div>
@@ -78,25 +80,24 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
-      <Notification />
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>
-          logout
-        </button>
-      </div>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <NewBlog doCreate={handleCreate} />
-      </Togglable>
-      {blogs.slice().sort(byLikes).map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          handleDelete={handleDelete}
-        />
-      )}
+      <Router>
+        <h1>blogs</h1>
+        <Notification />
+        <div>
+          {user.name} logged in
+          <button onClick={handleLogout}>
+            logout
+          </button>
+        </div>
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+          <NewBlog doCreate={handleCreate} />
+        </Togglable>
+
+        <Routes>
+          <Route path='/' element={<BlogList {...{ blogs, handleLike, handleDelete }} />} />
+          <Route path='/users' element={<UserList {...{ blogs }} />} />
+        </Routes>
+      </Router>
     </div>
   )
 }
