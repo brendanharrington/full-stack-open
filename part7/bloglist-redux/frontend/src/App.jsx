@@ -1,6 +1,6 @@
 import { useEffect, createRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
 
 import loginService from './services/login'
 import storage from './services/storage'
@@ -11,6 +11,7 @@ import Togglable from './components/Togglable'
 import BlogList from './components/BlogList'
 import UserList from './components/UserList'
 import User from './components/User'
+import BlogView from './components/BlogView'
 import { showNotification } from './reducers/notificationReducer'
 import { initializeBlogs, appendBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
 import { initializeUsers } from './reducers/usersReducer'
@@ -67,7 +68,7 @@ const App = () => {
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       dispatch(deleteBlog(blog))
-      dispatch(showNotification(`Blog ${blog.title}, by ${blog.author} removed`, 'error', 5))
+      dispatch(showNotification(`Blog ${blog.title}, by ${blog.author} removed`, 'success', 5))
     }
   }
 
@@ -97,9 +98,10 @@ const App = () => {
         </Togglable>
 
         <Routes>
-          <Route path='/' element={<BlogList {...{ blogs, handleLike, handleDelete }} />} />
+          <Route path='/' element={<BlogList {...{ blogs }} />} />
           <Route path='/users' element={<UserList />} />
           <Route path='/users/:id' element={<User />} />
+          <Route path='/blogs/:id' element={<BlogView {...{ handleLike, handleDelete }}/>} />
         </Routes>
       </Router>
     </div>
