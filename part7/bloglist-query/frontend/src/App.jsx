@@ -2,7 +2,6 @@ import { useState, useEffect, createRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { useNotificationDispatch } from './NotificationContext'
-import { getBlogs, createBlog } from './requests'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './services/storage'
@@ -36,6 +35,24 @@ const App = () => {
     }
   })
 
+  const updateBlogMutation = useMutation({
+    mutationFn: ({ id, updatedBlog }) => blogService.update(id, updatedBlog),
+    onSuccess: (updatedBlog) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      setNotification(`You liked "${updatedBlog.title}" by ${updatedBlog.author}`)
+    },
+    onError: () => {
+      setNotification('Failed to update blog', 'error')
+    }
+  })
+
+  const removeBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    }
+  })
+
   useEffect(() => {
     const user = storage.loadUser()
     if (user) {
@@ -60,15 +77,8 @@ const App = () => {
     newBlogMutation.mutate(blog)
   }
 
-  const handleVote = async (blog) => {
-    console.log('updating', blog)
-    const updatedBlog = await blogService.update(blog.id, {
-      ...blog,
-      likes: blog.likes + 1
-    })
-
-    setNotification(`You liked ${updatedBlog.title} by ${updatedBlog.author}`)
-    // setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b))
+  const handleVote = (blog) => {
+    updateBlogMutation.mutate({ id: blog.id, updatedBlog: { ...blog, likes: blog.likes + 1 } })
   }
 
   const handleLogout = () => {
@@ -79,15 +89,14 @@ const App = () => {
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id)
-      // setBlogs(blogs.filter(b => b.id !== blog.id))
+      removeBlogMutation.mutate(blog.id)
       setNotification(`Blog ${blog.title}, by ${blog.author} removed`)
     }
   }
 
   const result = useQuery({
     queryKey: ['blogs'],
-    queryFn: getBlogs,
+    queryFn: blogService.getAll,
     retry: false
   })
 
