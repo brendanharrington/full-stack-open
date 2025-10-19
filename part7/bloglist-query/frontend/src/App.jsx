@@ -1,6 +1,8 @@
 import { useState, useEffect, createRef } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { useNotificationDispatch } from './NotificationContext'
+import { getBlogs, createBlog } from './requests'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './services/storage'
@@ -11,9 +13,9 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 const App = () => {
+  const queryClient = useQueryClient()
   const dispatch = useNotificationDispatch()
 
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
   const setNotification = (message, type = 'success') => {
@@ -23,11 +25,16 @@ const App = () => {
     }, 5000)
   }
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      setNotification(`Blog created: ${newBlog.title}, ${newBlog.author}`)
+    },
+    onError: (error) => {
+      setNotification('Blog could not be created', 'error')
+    }
+  })
 
   useEffect(() => {
     const user = storage.loadUser()
@@ -50,10 +57,7 @@ const App = () => {
   }
 
   const handleCreate = async (blog) => {
-    const newBlog = await blogService.create(blog)
-    setBlogs(blogs.concat(newBlog))
-    setNotification(`Blog created: ${newBlog.title}, ${newBlog.author}`)
-    blogFormRef.current.toggleVisibility()
+    newBlogMutation.mutate(blog)
   }
 
   const handleVote = async (blog) => {
@@ -64,7 +68,7 @@ const App = () => {
     })
 
     setNotification(`You liked ${updatedBlog.title} by ${updatedBlog.author}`)
-    setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b))
+    // setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b))
   }
 
   const handleLogout = () => {
@@ -76,10 +80,22 @@ const App = () => {
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.remove(blog.id)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
+      // setBlogs(blogs.filter(b => b.id !== blog.id))
       setNotification(`Blog ${blog.title}, by ${blog.author} removed`)
     }
   }
+
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: getBlogs,
+    retry: false
+  })
+
+  if (result.isLoading) return <div>loading blogs...</div>
+
+  if (result.isError) return <div>blog service not available due to problems in server</div>
+
+  const blogs = result.data
 
   if (!user) {
     return (
@@ -105,6 +121,7 @@ const App = () => {
       </div>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
+        {/* <NewBlog /> */}
       </Togglable>
       {blogs.sort(byLikes).map(blog =>
         <Blog

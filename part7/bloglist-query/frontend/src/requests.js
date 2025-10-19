@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:3003/blogs'
+const baseUrl = 'http://localhost:3003/api/blogs'
 
 export const getBlogs = async () => {
   const response = await fetch(baseUrl)
