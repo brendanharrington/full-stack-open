@@ -10,8 +10,10 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogList from './components/BlogList'
 import UserList from './components/UserList'
+import User from './components/User'
 import { showNotification } from './reducers/notificationReducer'
 import { initializeBlogs, appendBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
+import { initializeUsers } from './reducers/usersReducer'
 import { setUser, clearUser } from './reducers/userReducer'
 
 const App = () => {
@@ -20,7 +22,10 @@ const App = () => {
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.user)
 
-  useEffect(() => { dispatch(initializeBlogs()) }, [dispatch])
+  useEffect(() => {
+    dispatch(initializeUsers())
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const user = storage.loadUser()
@@ -76,8 +81,6 @@ const App = () => {
     )
   }
 
-  const byLikes = (a, b) => b.likes - a.likes
-
   return (
     <div>
       <Router>
@@ -95,7 +98,8 @@ const App = () => {
 
         <Routes>
           <Route path='/' element={<BlogList {...{ blogs, handleLike, handleDelete }} />} />
-          <Route path='/users' element={<UserList {...{ blogs }} />} />
+          <Route path='/users' element={<UserList />} />
+          <Route path='/users/:id' element={<User />} />
         </Routes>
       </Router>
     </div>

@@ -1,18 +1,14 @@
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { initializeUsers } from '../reducers/usersReducer'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 
-const UserList = ({ blogs }) => {
-  const dispatch = useDispatch()
+const UserList = () => {
   const users = useSelector(state => state.users)
-
-  useEffect(() => {
-    dispatch(initializeUsers())
-  }, [dispatch])
 
   const style = {
     textAlign: 'center'
   }
+
+  if (!users) return <div>Loading users...</div>
 
   return (
     <div>
@@ -27,7 +23,7 @@ const UserList = ({ blogs }) => {
         <tbody>
           {users.map(user => (
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td><Link to={`/users/${user.id}`}>{user.name}</Link></td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}
