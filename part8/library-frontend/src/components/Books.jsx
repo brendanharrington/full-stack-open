@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import PropTypes from "prop-types";
 
