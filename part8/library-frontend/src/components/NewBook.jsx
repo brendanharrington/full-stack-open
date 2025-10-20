@@ -3,49 +3,7 @@ import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 import PropTypes from "prop-types";
 
-const CREATE_BOOK = gql`
-  mutation createBook(
-    $title: String!,
-    $published: Int!,
-    $author: String!,
-    $genres: [String!]!
-  ) {
-    addBook(
-      title: $title,
-      published: $published,
-      author: $author,
-      genres: $genres
-    ) {
-      title
-      published
-      author
-      id
-      genres
-    }
-  }
-`
-
-const ALL_BOOKS = gql`
-  query {
-    allBooks  {
-      title,
-      published,
-      author,
-      genres
-    }
-  }
-`
-
-const ALL_AUTHORS = gql`
-  query {
-    allAuthors  {
-      name,
-      born,
-      id,
-      bookCount
-    }
-  }
-`
+import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from '../queries';
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
