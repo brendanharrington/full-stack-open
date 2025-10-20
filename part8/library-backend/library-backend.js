@@ -1,10 +1,14 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { GraphQLError } = require('graphql')
 
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
+
 const Book = require('./models/book')
 const Author = require('./models/author')
+const handleError = require('./utils/handleError')
+const { validateBookInput, validateAuthorEdit } = require('./utils/validateInputs')
 
 require('dotenv').config()
 
@@ -36,11 +40,11 @@ let authors = [
     id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
     born: 1821
   },
-  { 
+  {
     name: 'Joshua Kerievsky', // birthyear not known
     id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
   },
-  { 
+  {
     name: 'Sandi Metz', // birthyear not known
     id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
   },
@@ -88,7 +92,7 @@ let books = [
     author: 'Joshua Kerievsky',
     id: "afa5de01-344d-11e9-a414-719c6709cf3e",
     genres: ['refactoring', 'patterns']
-  },  
+  },
   {
     title: 'Practical Object-Oriented Design, An Agile Primer Using Ruby',
     published: 2012,
@@ -187,27 +191,37 @@ const resolvers = {
 
   Mutation: {
     addBook: async (root, args) => {
-      let author = await Author.findOne({ name: args.author })
+      try {
+        validateBookInput(args)
 
-      if (!author) {
-        author = new Author({ name: args.author })
-        await author.save()
+        let author = await Author.findOne({ name: args.author })
+        if (!author) {
+          author = new Author({ name: args.author })
+          await author.save()
+        }
+
+        const book = new Book({ ...args, author: author._id })
+        await book.save()
+        return await book.populate('author')
+      } catch (error) {
+        handleError(error, 'Failed to add book')
       }
-
-      const book = new Book({ ...args, author: author._id })
-      await book.save()
-
-      return book.populate('author')
     },
+
     editAuthor: async (root, args) => {
-      const author = await Author.findOne({ name: args.name })
+      try {
+        validateAuthorEdit(args)
 
-      if (!author) return null
+        const author = await Author.findOne({ name: args.name })
+        if (!author) return null
 
-      author.born = args.setBornTo
-      await author.save()
-      return author
-    }
+        author.born = args.setBornTo
+        await author.save()
+        return author
+      } catch (error) {
+        handleError(error, 'Failed to edit author')
+      }
+    },
   }
 }
 
