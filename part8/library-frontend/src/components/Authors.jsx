@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client/react";
+import Select from "react-select";
 import PropTypes from "prop-types";
 
 import { ALL_AUTHORS, ALL_BOOKS, UPDATE_AUTHOR } from "../queries";
@@ -22,11 +23,15 @@ const Authors = (props) => {
 
   const authors = result.data.allAuthors
 
+  const options = authors.map(a => {
+    return { value: a.name, label: a.name }
+  })
+
   const handleSubmit = (event) => {
     event.preventDefault()
 
     updateAuthor({ variables: { name, setBornTo: Number(born) }})
-    
+
     setName('')
     setBorn('')
   }
@@ -52,14 +57,13 @@ const Authors = (props) => {
       </table>
       <h3>Set birthyear</h3>
       <form onSubmit={handleSubmit}>
-        <div>
-          name
-          <input 
-            type="text"
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
-        </div>
+        <Select
+          options={options}
+          onChange={(selected) => setName(selected ? selected.value : '')}
+          value={options.find((o) => o.value === name) || null}
+          isClearable
+          placeholder="Select author..."
+        />
         <div>
           born
           <input
@@ -70,6 +74,7 @@ const Authors = (props) => {
         </div>
         <button type="submit">update author</button>
       </form>
+      <div>{name}</div>
     </div>
   )
 }
