@@ -1,9 +1,28 @@
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import PropTypes from "prop-types";
+
+const ALL_BOOKS = gql`
+  query {
+    allBooks  {
+      title,
+      published,
+      author,
+      genres
+    }
+  }
+`
+
 const Books = (props) => {
+  const result = useQuery(ALL_BOOKS)
+  
   if (!props.show) {
     return null
   }
 
-  const books = []
+  if (result.loading) return <div>loading...</div>
+
+  const books = result.data.allBooks
 
   return (
     <div>
@@ -27,6 +46,10 @@ const Books = (props) => {
       </table>
     </div>
   )
+}
+
+Books.propTypes = {
+  show: PropTypes.bool
 }
 
 export default Books
