@@ -16,7 +16,7 @@ const App = () => {
     setNotification({ message, type })
     setTimeout(() => {
       setNotification(null)
-    }, 5000);
+    }, 5000)
   }
 
   const logout = () => {
@@ -31,7 +31,7 @@ const App = () => {
       <div>
         <Notify {...{ notification }} />
         <h2>Login</h2>
-        <LoginForm {...{ notify, setToken }} />
+        <LoginForm notify={notify} setToken={setToken} />
       </div>
     )
   }
@@ -53,7 +53,7 @@ const App = () => {
 
       <NewBook show={page === "add"} notify={notify} />
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
