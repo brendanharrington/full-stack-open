@@ -12,10 +12,12 @@ const jwt = require('jsonwebtoken')
 
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
+mongoose.set('debug', true)
 
 const User = require('./models/user')
 const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
+const bookCountLoader = require('./loaders/bookCountLoader')
 
 require('dotenv').config()
 
@@ -70,9 +72,10 @@ const start = async () => {
         const auth = req ? req.headers.authorization : null
         if (auth && auth.startsWith('Bearer ')) {
           const decodedToken = jwt.verify(auth.substring(7), process.env.JWT_SECRET)
-          const currentUser = await User.findOne({ username: decodedToken.username})
-          return { currentUser }
+          const currentUser = await User.findOne({ username: decodedToken.username })
+          return { currentUser, loaders: { bookCountLoader } }
         }
+        return { loaders: { bookCountLoader } }
       },
     }),
   )
