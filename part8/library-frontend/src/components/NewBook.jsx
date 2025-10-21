@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from '../queries';
 
-const NewBook = (props) => {
+const NewBook = ({ show, notify }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
@@ -12,17 +12,23 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [ createBook ] = useMutation(CREATE_BOOK, {
+    onError: (error) => {
+      notify(error.errors[0].message, 'error')
+    },
+    onCompleted: () => {
+      notify(`${title} by ${author} added!`, 'success')
+    },
     refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS } ]
   })
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
   const submit = async (event) => {
     event.preventDefault()
 
-    createBook({ variables: { title, author, published: Number(published), genres }})
+    await createBook({ variables: { title, author, published: Number(published), genres }})
 
     setTitle('')
     setPublished('')
@@ -78,7 +84,8 @@ const NewBook = (props) => {
 }
 
 NewBook.propTypes = {
-  show: PropTypes.bool
+  show: PropTypes.bool,
+  notify: PropTypes.func
 }
 
 export default NewBook
