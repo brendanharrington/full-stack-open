@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useMutation } from "@apollo/client/react";
+import { useMutation, useSubscription } from "@apollo/client/react";
 import PropTypes from "prop-types";
 
-import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from '../queries';
+import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK, BOOK_ADDED } from '../queries';
 
 const NewBook = ({ show, notify }) => {
   const [title, setTitle] = useState('')
@@ -10,6 +10,12 @@ const NewBook = ({ show, notify }) => {
   const [published, setPublished] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      alert(`${data.data.bookAdded.title} added to the library`)
+    }
+  })
 
   const [ createBook ] = useMutation(CREATE_BOOK, {
     onError: (error) => {
