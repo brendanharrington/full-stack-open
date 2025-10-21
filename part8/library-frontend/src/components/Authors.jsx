@@ -74,7 +74,6 @@ const Authors = (props) => {
         </div>
         <button type="submit">update author</button>
       </form>
-      <div>{name}</div>
     </div>
   )
 }
