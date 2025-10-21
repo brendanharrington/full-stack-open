@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
 import PropTypes from "prop-types";
 import Select from "react-select";
@@ -6,15 +6,27 @@ import Select from "react-select";
 import { ALL_BOOKS } from "../queries";
 
 const Books = (props) => {
-  const result = useQuery(ALL_BOOKS)
   const [filter, setFilter] = useState(null)
+
+  const allBooksResult = useQuery(ALL_BOOKS)
+
+  const result = useQuery(ALL_BOOKS, {
+    variables: { genre: filter }
+  })
+
+  useEffect(() => {
+    result.refetch({ genre: filter })
+  }, [filter, result.refetch])
 
   if (!props.show) return null
 
-  if (result.loading) return <div>loading...</div>
+  if (result.loading || allBooksResult.loading) {
+    return <div>loading...</div>
+  }
   
-  const books = result.data.allBooks
-  const genres = [...new Set(books.flatMap(book => book.genres))]
+  const allBooks = allBooksResult.data.allBooks
+  const filteredBooks = result.data.allBooks
+  const genres = [...new Set(allBooks.flatMap(book => book.genres))]
 
   const options = genres.map(g => {
     return { value: g, label: g }
@@ -37,23 +49,12 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filter 
-            ? books
-              .slice()
-              .filter(book => book.genres.includes(filter))
-              .map((a) => (
-                <tr key={a.title}>
-                  <td>{a.title}</td>
-                  <td>{a.author.name}</td>
-                  <td>{a.published}</td>
-                </tr>
-              ))
-            : books.map((a) => (
-              <tr key={a.title}>
-                <td>{a.title}</td>
-                <td>{a.author.name}</td>
-                <td>{a.published}</td>
-              </tr>
+          {filteredBooks.map((a) => (
+            <tr key={a.title}>
+              <td>{a.title}</td>
+              <td>{a.author.name}</td>
+              <td>{a.published}</td>
+            </tr>
           ))}
         </tbody>
       </table>
