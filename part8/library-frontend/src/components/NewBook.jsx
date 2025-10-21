@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useMutation, useSubscription } from "@apollo/client/react";
 import PropTypes from "prop-types";
 
-import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK, BOOK_ADDED } from '../queries';
+import { ALL_AUTHORS, CREATE_BOOK, BOOK_ADDED, BOOK_DETAILS } from '../queries';
 
-const NewBook = ({ show, notify }) => {
+const NewBook = ({ show, notify, client }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
@@ -13,7 +13,33 @@ const NewBook = ({ show, notify }) => {
 
   useSubscription(BOOK_ADDED, {
     onData: ({ data }) => {
-      alert(`${data.data.bookAdded.title} added to the library`)
+      const addedBook = data.data.bookAdded
+      alert(`${addedBook.title} added to the library`)
+
+      // normalize the new book in cache using the shared BOOK_DETAILS fragment
+      try {
+        const bookId = client.cache.identify(addedBook) || `Book:${addedBook.id}`
+        client.cache.writeFragment({
+          id: bookId,
+          fragment: BOOK_DETAILS,
+          data: addedBook
+        })
+
+        const bookRef = { __ref: bookId }
+
+        client.cache.modify({
+          fields: {
+            allBooks(existing = []) {
+              if (existing.some((ref) => ref.__ref === bookRef.__ref)) {
+                return existing
+              }
+              return existing.concat(bookRef)
+            }
+          }
+        })
+      } catch (e) {
+        // ignore cache update errors
+      }
     }
   })
 
@@ -21,10 +47,38 @@ const NewBook = ({ show, notify }) => {
     onError: (error) => {
       notify(error.errors[0].message, 'error')
     },
-    onCompleted: () => {
+    onCompleted: (data) => {
+      const addedBook = data.addBook
       notify(`${title} by ${author} added!`, 'success')
+
+      // normalize and add to allBooks
+      try {
+        const bookId = client.cache.identify(addedBook) || `Book:${addedBook.id}`
+
+        client.cache.writeFragment({
+          id: bookId,
+          fragment: BOOK_DETAILS,
+          data: addedBook
+        })
+
+        const bookRef = { __ref: bookId }
+
+        client.cache.modify({
+          fields: {
+            allBooks(existing = []) {
+              if (existing.some((ref) => ref.__ref === bookRef.__ref)) {
+                return existing
+              }
+              return existing.concat(bookRef)
+            }
+          }
+        })
+      } catch (e) {
+        // ignore
+      }
     },
-    refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS } ]
+    // still update authors list
+    refetchQueries: [ { query: ALL_AUTHORS } ]
   })
 
   if (!show) {
@@ -93,6 +147,7 @@ const NewBook = ({ show, notify }) => {
 NewBook.propTypes = {
   show: PropTypes.bool,
   notify: PropTypes.func
+  ,client: PropTypes.object
 }
 
 export default NewBook

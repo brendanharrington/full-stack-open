@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@apollo/client/react";
 import PropTypes from "prop-types";
 import Select from "react-select";
@@ -8,24 +8,19 @@ import { ALL_BOOKS } from "../queries";
 const Books = (props) => {
   const [filter, setFilter] = useState(null)
 
+  // single query for all books; filter on the client so cache updates are reflected
   const allBooksResult = useQuery(ALL_BOOKS)
-
-  const result = useQuery(ALL_BOOKS, {
-    variables: { genre: filter }
-  })
-
-  useEffect(() => {
-    result.refetch({ genre: filter })
-  }, [filter, result.refetch])
 
   if (!props.show) return null
 
-  if (result.loading || allBooksResult.loading) {
+  if (allBooksResult.loading) {
     return <div>loading...</div>
   }
-  
+
   const allBooks = allBooksResult.data.allBooks
-  const filteredBooks = result.data.allBooks
+  const filteredBooks = filter
+    ? allBooks.filter((b) => b.genres.includes(filter))
+    : allBooks
   const genres = [...new Set(allBooks.flatMap(book => book.genres))]
 
   const options = genres.map(g => {

@@ -53,7 +53,7 @@ const App = () => {
 
       <Books show={page === "books"} />
 
-      <NewBook show={page === "add"} notify={notify} />
+      <NewBook show={page === "add"} notify={notify} client={client} />
 
       <Recommendations show={page === "recommendations"} />
     </div>
