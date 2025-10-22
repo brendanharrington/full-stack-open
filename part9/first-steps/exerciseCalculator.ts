@@ -37,4 +37,25 @@ const calculateExercises = (exerciseHours: number[], target: number): Result => 
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+try {
+  const rawArgs = process.argv.slice(2);
+  if (rawArgs.length < 2) throw new Error('Expected target and at least one day of exercise hours');
+
+  const target = Number(rawArgs[0]);
+  if (isNaN(target) || target < 0) throw new Error('Target must be a non-negative number');
+
+  const exerciseHours = rawArgs.slice(1).map((v, i) => {
+    const n = Number(v);
+    if (isNaN(n) || n < 0) throw new Error(`Exercise hour at position ${i + 1} is not a non-negative number`);
+    return n;
+  });
+
+  console.log(calculateExercises(exerciseHours, target));
+} catch (error) {
+  if (error instanceof Error) {
+    console.error('Error:', error.message);
+  } else {
+    console.error('Unknown error');
+  }
+  process.exit(1);
+}
