@@ -1,5 +1,5 @@
 const calculateBmi = (heightInCm: number, weightInKg: number) => {
-  const bmi =  weightInKg / ((heightInCm / 100) ** 2)
+  const bmi =  weightInKg / ((heightInCm / 100) ** 2);
 
   if (bmi < 18.5) {
     return 'Underweight';
@@ -8,9 +8,9 @@ const calculateBmi = (heightInCm: number, weightInKg: number) => {
   } else if (bmi < 30) {
     return 'Overweight';
   } else {
-    return 'Obese'
+    return 'Obese';
   }
-}
+};
 
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -29,8 +29,8 @@ if (require.main === module) {
     throw new Error('Height and weight must be positive numbers');
   }
   
-  console.log(calculateBmi(heightInCm, weightInKg))
+  console.log(calculateBmi(heightInCm, weightInKg));
 }
 
 
-export default calculateBmi
+export default calculateBmi;
