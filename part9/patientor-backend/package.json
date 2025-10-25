@@ -1,0 +1,15 @@
+{
+  "name": "patientor-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brendan Harrington",
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
