@@ -1,18 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-type Weather = 'sunny' | 'rainy' | 'cloudy' | 'stormy' | 'windy';
+import EntryForm from "./components/EntryForm";
+import EntryList from "./components/EntryList";
 
-type Visibility = 'great' | 'good' | 'ok' | 'poor';
-
-interface DiaryEntry {
-  id: number;
-  date: string;
-  weather: Weather;
-  visibility: Visibility;
-  comment: string;
-}
-type NonSensitiveDiaryEntry = Omit<DiaryEntry, 'comment'>;
+import type { NonSensitiveDiaryEntry } from "./types";
 
 const App = () => {
   const [diaries, setDiaries] = useState<NonSensitiveDiaryEntry[]>([]);
@@ -33,44 +25,12 @@ const App = () => {
   return (
     <div>
       <h1>Flight Diaries App</h1>
+      
       <h2>Add new entry</h2>
-      <form>
-        <label>
-          date
-          <input type='date' name='date' />
-        </label>
-        <br />
+      <EntryForm />
 
-        <label>
-          visibility
-          <input type='text' name='visibility' />
-        </label>
-        <br />
-
-        <label>
-          weather
-          <input type='text' name='weather' />
-        </label>
-        <br />
-
-        <label>
-          comment
-          <input type='text' name='comment' />
-        </label>
-        <br />
-
-        <button>add</button>
-      </form>
       <h2>Diary Entries</h2>
-      {diaries.map(d => {
-        return (
-          <div key={`diary-${d.id}`}>
-            <h3>{d.date}</h3>
-            <div>visibility: {d.visibility}</div>
-            <div>weather: {d.weather}</div>
-          </div>
-        )
-      })}
+      <EntryList diaries={diaries} />
     </div>
   );
 };
