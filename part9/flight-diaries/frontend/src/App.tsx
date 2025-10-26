@@ -1,35 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-function App() {
-  const [count, setCount] = useState(0)
+type Weather = 'sunny' | 'rainy' | 'cloudy' | 'stormy' | 'windy';
+
+type Visibility = 'great' | 'good' | 'ok' | 'poor';
+
+interface DiaryEntry {
+  id: number;
+  date: string;
+  weather: Weather;
+  visibility: Visibility;
+  comment: string;
+}
+type NonSensitiveDiaryEntry = Omit<DiaryEntry, 'comment'>;
+
+const App = () => {
+  const [diaries, setDiaries] = useState<NonSensitiveDiaryEntry[]>([]);
+
+  useEffect(() => {
+    void fetchDiaryList();
+  }, []);
+
+  const fetchDiaryList = async () => {
+    try {
+      const { data } = await axios.get<NonSensitiveDiaryEntry[]>('/api/diaries')
+      setDiaries(data)
+    } catch (error) {
+      console.error('Failed to fetch diaries', error)
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <h1>Flight Diaries App</h1>
+      <h2>Add new entry</h2>
+      <form>
+        <label>
+          date
+          <input type='date' name='date' />
+        </label>
+        <br />
 
-export default App
+        <label>
+          visibility
+          <input type='text' name='visibility' />
+        </label>
+        <br />
+
+        <label>
+          weather
+          <input type='text' name='weather' />
+        </label>
+        <br />
+
+        <label>
+          comment
+          <input type='text' name='comment' />
+        </label>
+        <br />
+
+        <button>add</button>
+      </form>
+      <h2>Diary Entries</h2>
+      {diaries.map(d => {
+        return (
+          <div key={`diary-${d.id}`}>
+            <h3>{d.date}</h3>
+            <div>visibility: {d.visibility}</div>
+            <div>weather: {d.weather}</div>
+          </div>
+        )
+      })}
+    </div>
+  );
+};
+
+export default App;
