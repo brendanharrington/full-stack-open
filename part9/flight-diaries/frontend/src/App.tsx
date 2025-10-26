@@ -25,9 +25,9 @@ const App = () => {
   return (
     <div>
       <h1>Flight Diaries App</h1>
-      
+
       <h2>Add new entry</h2>
-      <EntryForm />
+      <EntryForm setDiaries={setDiaries} diaries={diaries} />
 
       <h2>Diary Entries</h2>
       <EntryList diaries={diaries} />
