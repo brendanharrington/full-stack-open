@@ -21,6 +21,9 @@ const EntryForm = (props: EntryFormPropTypes) => {
   const [weather, setWeather] = useState<Weather | ''>('');
   const [comment, setComment] = useState('');
 
+  const visiblityOptions = ['great', 'good', 'ok', 'poor'];
+  const weatherOptions = ['sunny', 'rainy', 'cloudy', 'stormy', 'windy'];
+
   const showNotification = (message: string) => {
     setNotification(message);
 
@@ -83,29 +86,42 @@ const EntryForm = (props: EntryFormPropTypes) => {
             onChange={({ target }) => setDate(target.value)}
           />
         </label>
-        <br />
 
-        <label>
-          visibility
-          <input 
-            type="text"
-            name="visibility"
-            value={visibility}
-            onChange={({ target }) => setVisibility(target.value as Visibility)}
-          />
-        </label>
-        <br />
+        <fieldset>
+          <legend>visibility</legend>
+          {visiblityOptions.map((o) => {
+            return (
+              <label>
+                <input
+                  type="radio"
+                  name='visibility'
+                  id={o}
+                  value={o}
+                  onChange={({ target }) => setVisibility(target.value as Visibility)}
+                />
+                {o}
+              </label>
+            )
+          })}
+        </fieldset>
 
-        <label>
-          weather
-          <input 
-            type="text"
-            name="weather"
-            value={weather}
-            onChange={({ target }) => setWeather(target.value as Weather)}
-          />
-        </label>
-        <br />
+        <fieldset>
+          <legend>weather</legend>
+          {weatherOptions.map((o) => {
+            return (
+              <label>
+                <input
+                  type="radio"
+                  name='weather'
+                  id={o}
+                  value={o}
+                  onChange={({ target }) => setWeather(target.value as Weather)}
+                />
+                {o}
+              </label>
+            )
+          })}
+        </fieldset>
 
         <label>
           comment
