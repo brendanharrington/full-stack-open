@@ -4,9 +4,10 @@ import { Typography } from '@mui/material';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 
-import { Patient } from "../../types";
+import { Diagnosis, Patient } from "../../types";
 
 import patientService from "../../services/patients";
+import diagnosisService from "../../services/diagnoses";
 
 interface PatientProps {
   patients: Patient[];
@@ -15,17 +16,26 @@ interface PatientProps {
 const PatientInfoPage = ({ patients } : PatientProps) => {
   const id = useParams().id;
   const [patient, setPatient] = useState<Patient | undefined>(undefined);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[] | undefined>(undefined);
   
   
   useEffect(() => {
     if (!id) return;
+
     patientService.getById(id)
       .then(fetched => setPatient(fetched))
+      .catch(() => {
+      });
+
+    diagnosisService.getAll()
+      .then(fetched => setDiagnoses(fetched))
       .catch(() => {
       });
   }, [id, patients]);
 
   if (!patient) return <div>patient not found...</div>;
+
+  if (!diagnoses) return <div>diagnoses not found...</div>;
 
   return (
     <div>
@@ -55,10 +65,12 @@ const PatientInfoPage = ({ patients } : PatientProps) => {
             <div><b>{e.date}:</b> <em>{e.description}</em></div>
             <ul>
               {e.diagnosisCodes?.map((c) => {
-                return <li key={c}>{c}</li>;
+                const diagnosis = diagnoses.find(d => d.code === c);
+                return (
+                  <li key={c}>{c} - {diagnosis ? diagnosis.name : 'Unknown'}</li>
+                );
               })}
             </ul>
-            <div></div>
           </div>
         );
       })}
