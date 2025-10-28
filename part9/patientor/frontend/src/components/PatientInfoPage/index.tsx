@@ -4,6 +4,8 @@ import { Typography } from '@mui/material';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 
+import EntryList from "./EntryList";
+
 import { Diagnosis, Patient } from "../../types";
 
 import patientService from "../../services/patients";
@@ -17,7 +19,6 @@ const PatientInfoPage = ({ patients } : PatientProps) => {
   const id = useParams().id;
   const [patient, setPatient] = useState<Patient | undefined>(undefined);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[] | undefined>(undefined);
-  
   
   useEffect(() => {
     if (!id) return;
@@ -57,23 +58,7 @@ const PatientInfoPage = ({ patients } : PatientProps) => {
         <b>Entries</b>
       </Typography>
 
-      {patient.entries.length === 0 
-        ? <div>No entries to show...</div>
-        : patient.entries.map((e, idx) => {
-        return (
-          <div key={`${e.id ?? idx}`}>
-            <div><b>{e.date}:</b> <em>{e.description}</em></div>
-            <ul>
-              {e.diagnosisCodes?.map((c) => {
-                const diagnosis = diagnoses.find(d => d.code === c);
-                return (
-                  <li key={c}>{c} - {diagnosis ? diagnosis.name : 'Unknown'}</li>
-                );
-              })}
-            </ul>
-          </div>
-        );
-      })}
+      <EntryList {...{ patient, diagnoses }} />
     </div>
   );
 };
