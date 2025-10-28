@@ -5,8 +5,9 @@ import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 
 import EntryList from "./EntryList";
+import AddEntryForm from "./AddEntryForm";
 
-import { Diagnosis, Patient } from "../../types";
+import { Diagnosis, Patient, Entry } from "../../types";
 
 import patientService from "../../services/patients";
 import diagnosisService from "../../services/diagnoses";
@@ -19,7 +20,23 @@ const PatientInfoPage = ({ patients } : PatientProps) => {
   const id = useParams().id;
   const [patient, setPatient] = useState<Patient | undefined>(undefined);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[] | undefined>(undefined);
+  const [entries, setEntries] = useState<Entry[]>([]);
+  const [notification, setNotification] = useState<string>('');
+
+  const showNotification = (message: string) => {
+    setNotification(message);
+    setTimeout(() => setNotification(''), 5000);
+  };
   
+  const fetchEntries = async (patientId: string) => {
+    try {
+      const fetched = await patientService.getEntries(patientId);
+      setEntries(fetched);
+    } catch {
+      // ignore fetch errors for now
+    }
+  };
+
   useEffect(() => {
     if (!id) return;
 
@@ -32,6 +49,9 @@ const PatientInfoPage = ({ patients } : PatientProps) => {
       .then(fetched => setDiagnoses(fetched))
       .catch(() => {
       });
+
+    fetchEntries(id);
+    
   }, [id, patients]);
 
   if (!patient) return <div>patient not found...</div>;
@@ -54,11 +74,19 @@ const PatientInfoPage = ({ patients } : PatientProps) => {
         <b>Occupation:</b> {patient.occupation}
       </Typography>
 
+      {notification && <p>{notification}</p>}
+
+      <Typography variant="h5" style={{ margin: "0.5em 0"}}>
+        <b>New HealthCheck Entry</b>
+      </Typography>
+
+      {id ? <AddEntryForm {...{ id, setEntries, showNotification }} /> : null}
+
       <Typography variant="h5" style={{ margin: "0.5em 0"}}>
         <b>Entries</b>
       </Typography>
 
-      <EntryList {...{ patient, diagnoses }} />
+      <EntryList {...{ entries, diagnoses }} />
     </div>
   );
 };
