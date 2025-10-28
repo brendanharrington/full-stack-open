@@ -1,4 +1,18 @@
 import React, { useState } from "react";
+import {
+  Box,
+  Grid,
+  TextField,
+  Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Typography
+} from "@mui/material";
 
 import { HealthCheckRating, NewEntry, Entry } from "../../types";
 import patientService from "../../services/patients";
@@ -92,6 +106,7 @@ const AddEntryForm = ({ id, setEntries, showNotification }: AddEntryFormProps) =
     try {
       const createdEntry = await patientService.createEntry(id, newEntry);
       setEntries(prev => [...prev, createdEntry]);
+      showNotification('Entry added successfully');
     } catch (error) {
       showNotification('Failed to add entry');
       console.error('Failed to add entry:', error);
@@ -112,145 +127,154 @@ const AddEntryForm = ({ id, setEntries, showNotification }: AddEntryFormProps) =
     setCodes([]);
   };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Entry Type
-        <select value={entryType} onChange={(e) => setEntryType(e.target.value as EntryType)}>
-          <option value="HealthCheck">Health Check</option>
-          <option value="Hospital">Hospital</option>
-          <option value="OccupationalHealthcare">Occupational Healthcare</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Description
-        <input
-          type="text"
-          name="description"
-          value={description}
-          onChange={({ target }) => setDescription(target.value)}
-          required
-        />
-      </label>
-      <br />
-      <label>
-        Date
-        <input
-          type="date"
-          name="date"
-          value={date}
-          onChange={({ target }) => setDate(target.value)}
-          required
-        />
-      </label>
-      <br />
-      <label>
-        Specialist
-        <input
-          type="text"
-          name="specialist"
-          value={specialist}
-          onChange={({ target }) => setSpecialist(target.value)}
-          required
-        />
-      </label>
-      <br />
+  const requiredMissing = !description || !date || !specialist || (entryType === "Hospital" && (!dischargeDate || !dischargeCriteria)) || (entryType === "OccupationalHealthcare" && !employerName);
 
-      {entryType === "HealthCheck" && (
-        <>
-          <label>
-            Healthcheck Rating
-            <input
-              type="number"
-              name="rating"
+  return (
+    <Box component="form" onSubmit={handleSubmit} noValidate>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <InputLabel id="entry-type-label">Entry Type</InputLabel>
+            <Select
+              labelId="entry-type-label"
+              value={entryType}
+              label="Entry Type"
+              onChange={(e) => setEntryType(e.target.value as EntryType)}
+            >
+              <MenuItem value="HealthCheck">Health Check</MenuItem>
+              <MenuItem value="Hospital">Hospital</MenuItem>
+              <MenuItem value="OccupationalHealthcare">Occupational Healthcare</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Date"
+            type="date"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            value={date}
+            onChange={({ target }) => setDate(target.value)}
+            required
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <TextField
+            label="Description"
+            fullWidth
+            value={description}
+            onChange={({ target }) => setDescription(target.value)}
+            required
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Specialist"
+            fullWidth
+            value={specialist}
+            onChange={({ target }) => setSpecialist(target.value)}
+            required
+          />
+        </Grid>
+
+        {entryType === "HealthCheck" && (
+          <Grid item xs={12} sm={6}>
+            <Typography variant="subtitle2" gutterBottom>
+              Health Check Rating
+            </Typography>
+            <RadioGroup
+              row
               value={String(healthCheckRating)}
               onChange={({ target }) => setHealthCheckRating(Number(target.value) as HealthCheckRating)}
-              min={0}
-              max={3}
-              required
-            />
-          </label>
-          <br />
-        </>
-      )}
+            >
+              <FormControlLabel value="0" control={<Radio />} label="Healthy (0)" />
+              <FormControlLabel value="1" control={<Radio />} label="LowRisk (1)" />
+              <FormControlLabel value="2" control={<Radio />} label="HighRisk (2)" />
+              <FormControlLabel value="3" control={<Radio />} label="Critical (3)" />
+            </RadioGroup>
+          </Grid>
+        )}
 
-      {entryType === "Hospital" && (
-        <>
-          <label>
-            Discharge Date
-            <input
-              type="date"
-              name="dischargeDate"
-              value={dischargeDate}
-              onChange={({ target }) => setDischargeDate(target.value)}
-              required
-            />
-          </label>
-          <br />
-          <label>
-            Discharge Criteria
-            <input
-              type="text"
-              name="dischargeCriteria"
-              value={dischargeCriteria}
-              onChange={({ target }) => setDischargeCriteria(target.value)}
-              required
-            />
-          </label>
-          <br />
-        </>
-      )}
+        {entryType === "Hospital" && (
+          <>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Discharge Date"
+                type="date"
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                value={dischargeDate}
+                onChange={({ target }) => setDischargeDate(target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Discharge Criteria"
+                fullWidth
+                value={dischargeCriteria}
+                onChange={({ target }) => setDischargeCriteria(target.value)}
+                required
+              />
+            </Grid>
+          </>
+        )}
 
-      {entryType === "OccupationalHealthcare" && (
-        <>
-          <label>
-            Employer Name
-            <input
-              type="text"
-              name="employerName"
-              value={employerName}
-              onChange={({ target }) => setEmployerName(target.value)}
-              required
-            />
-          </label>
-          <br />
-          <label>
-            Sick Leave Start
-            <input
-              type="date"
-              name="sickLeaveStart"
-              value={sickLeaveStart}
-              onChange={({ target }) => setSickLeaveStart(target.value)}
-            />
-          </label>
-          <br />
-          <label>
-            Sick Leave End
-            <input
-              type="date"
-              name="sickLeaveEnd"
-              value={sickLeaveEnd}
-              onChange={({ target }) => setSickLeaveEnd(target.value)}
-            />
-          </label>
-          <br />
-        </>
-      )}
+        {entryType === "OccupationalHealthcare" && (
+          <>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Employer Name"
+                fullWidth
+                value={employerName}
+                onChange={({ target }) => setEmployerName(target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="Sick Leave Start"
+                type="date"
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                value={sickLeaveStart}
+                onChange={({ target }) => setSickLeaveStart(target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="Sick Leave End"
+                type="date"
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                value={sickLeaveEnd}
+                onChange={({ target }) => setSickLeaveEnd(target.value)}
+              />
+            </Grid>
+          </>
+        )}
 
-      <label>
-        Diagnosis Codes
-        <input
-          type="text"
-          name="codes"
-          value={codesInput}
-          onChange={({ target }) => setCodesInput(target.value)}
-          onBlur={({ target }) => setCodes(parseCodes(target.value))}
-          placeholder="e.g. A1, B2, C3"
-        />
-      </label>
-      <button type="submit">add</button>
-    </form>
+        <Grid item xs={12}>
+          <TextField
+            label="Diagnosis Codes (comma separated)"
+            fullWidth
+            value={codesInput}
+            onChange={({ target }) => setCodesInput(target.value)}
+            onBlur={({ target }) => setCodes(parseCodes(target.value))}
+            placeholder="e.g. A1, B2, C3"
+          />
+        </Grid>
+
+        <Grid item xs={12} display="flex" justifyContent="flex-end" gap={1}>
+          <Button variant="contained" color="primary" type="submit" disabled={requiredMissing}>
+            Add
+          </Button>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

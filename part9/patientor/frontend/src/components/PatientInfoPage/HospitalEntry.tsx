@@ -1,33 +1,53 @@
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import { Card, CardHeader, CardContent, Typography, Stack, Chip, Box } from "@mui/material";
 
-import { Entry, Diagnosis } from "../../types";
+import type { HospitalEntry, Diagnosis } from "../../types";
 
 interface HospitalEntryProps {
-  entry: Entry;
+  entry: HospitalEntry;
   diagnoses: Diagnosis[];
 }
 
 const HospitalEntry = ({ entry, diagnoses }: HospitalEntryProps) => {
+  const discharge = entry.discharge;
+
   return (
-    <div style={{ padding: "0.5em", border: "solid"}}>
-      <div style={{display: 'flex', alignItems: 'center' }} >
-        <b>{entry.date}</b> 
-        <LocalHospitalIcon style={{ paddingLeft: '0.2em'}} />
-      </div>
+    <Card variant="outlined" sx={{ bgcolor: 'background.paper', borderColor: 'divider' }}>
+      <CardHeader
+        avatar={<LocalHospitalIcon color="primary" />}
+        title={<Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{entry.date}</Typography>}
+        subheader={<Typography variant="caption" color="text.secondary">Hospital</Typography>}
+      />
+      <CardContent>
+        <Typography variant="body2" sx={{ fontStyle: 'italic', mb: 1 }}>
+          {entry.description}
+        </Typography>
 
-      <div><em>{entry.description}</em></div>
+        {discharge && (
+          <Box mb={1}>
+            <Chip
+              color="info"
+              label={`Discharge: ${discharge.date} — ${discharge.criteria}`}
+              size="small"
+            />
+          </Box>
+        )}
 
-      <ul>
-        {entry.diagnosisCodes?.map((c) => {
-          const diagnosis = diagnoses.find(d => d.code === c);
-          return (
-            <li key={c}>{c} - {diagnosis ? diagnosis.name : 'Unknown'}</li>
-          );
-        })}
-      </ul>
+        {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+          <Stack direction="row" spacing={1} flexWrap="wrap" mb={1}>
+            {entry.diagnosisCodes.map((c) => {
+              const diagnosis = diagnoses.find(d => d.code === c);
+              const label = diagnosis ? `${c} — ${diagnosis.name}` : c;
+              return <Chip key={c} label={label} size="small" />;
+            })}
+          </Stack>
+        )}
 
-      <div>diagnosed by {entry.specialist}</div>
-    </div>
+        <Typography variant="caption" color="text.secondary">
+          diagnosed by {entry.specialist}
+        </Typography>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,6 +1,7 @@
 import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { Card, CardHeader, CardContent, Typography, Stack, Chip } from "@mui/material";
 
 import { Entry, Diagnosis } from "../../types";
 
@@ -10,42 +11,51 @@ interface HealthCheckEntryProps {
 }
 
 const HealthCheckEntry = ({ entry, diagnoses }: HealthCheckEntryProps) => {
+  // healthCheckRating is defined only on HealthCheck entries
+  const maxHearts = 3;
+  let filledCount = 0;
+  if (entry.type === "HealthCheck" && typeof entry.healthCheckRating === 'number' && !Number.isNaN(entry.healthCheckRating)) {
+    const rating = entry.healthCheckRating;
+    filledCount = Math.max(0, Math.min(maxHearts, maxHearts - rating));
+  }
+
   return (
-    <div style={{ padding: "0.5em", border: "solid"}}>
-      <div style={{display: 'flex', alignItems: 'center' }} >
-        <b>{entry.date}</b> <MedicalInformationIcon style={{ paddingLeft: '0.2em'}} />
-      </div>
-      
-      <div><em>{entry.description}</em></div>
-      
-      <ul>
-        {entry.diagnosisCodes?.map((c) => {
-          const diagnosis = diagnoses.find(d => d.code === c);
-          return (
-            <li key={c}>{c} - {diagnosis ? diagnosis.name : 'Unknown'}</li>
-          );
-        })}
-      </ul>
+    <Card variant="outlined" sx={{ bgcolor: 'background.paper', borderColor: 'divider' }}>
+      <CardHeader
+        avatar={<MedicalInformationIcon color="success" />}
+        title={<Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{entry.date}</Typography>}
+        subheader={<Typography variant="caption" color="text.secondary">Health Check</Typography>}
+      />
+      <CardContent>
+        <Typography variant="body2" sx={{ fontStyle: 'italic', mb: 1 }}>
+          {entry.description}
+        </Typography>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }} aria-hidden={false}>
-        {(() => {
-          if (entry.type !== 'HealthCheck') return null;
-          const rating = entry.healthCheckRating;
-          const maxHearts = 3;
-          if (typeof rating !== 'number' || Number.isNaN(rating)) return null;
-          const filledCount = Math.max(0, Math.min(maxHearts, maxHearts - rating));
-          return Array.from({ length: maxHearts }).map((_, i) =>
+        {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+          <Stack direction="row" spacing={1} flexWrap="wrap" mb={1}>
+            {entry.diagnosisCodes.map((c) => {
+              const diagnosis = diagnoses.find(d => d.code === c);
+              const label = diagnosis ? `${c} — ${diagnosis.name}` : c;
+              return <Chip key={c} label={label} size="small" />;
+            })}
+          </Stack>
+        )}
+
+        <Stack direction="row" spacing={0.5} alignItems="center" mb={1} aria-hidden={false}>
+          {Array.from({ length: maxHearts }).map((_, i) =>
             i < filledCount ? (
-              <FavoriteIcon key={i} titleAccess={`health ${i + 1} of ${maxHearts}`} style={{ color: '#e53935' }} />
+              <FavoriteIcon key={i} titleAccess={`health ${i + 1} of ${maxHearts}`} sx={{ color: 'error.main' }} />
             ) : (
-              <FavoriteBorderIcon key={i} titleAccess={`health ${i + 1} of ${maxHearts} (empty)`} style={{ color: '#bbb' }} />
+              <FavoriteBorderIcon key={i} titleAccess={`health ${i + 1} of ${maxHearts} (empty)`} sx={{ color: 'text.disabled' }} />
             )
-          );
-        })()}
-      </div>
+          )}
+        </Stack>
 
-      <div>diagnosed by {entry.specialist}</div>
-    </div>
+        <Typography variant="caption" color="text.secondary">
+          diagnosed by {entry.specialist}
+        </Typography>
+      </CardContent>
+    </Card>
   );
 };
 
