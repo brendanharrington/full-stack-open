@@ -1,73 +1,35 @@
-# React + TypeScript + Vite
+# react-exercises
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview  
 
-Currently, two official plugins are available:
+This repository contains my solutions for **Full Stack Open – Part 9: TypeScript**, exercises **9.15–9.16**.  
+These exercises focus on refactoring a simple React application using TypeScript to demonstrate component-based design, prop typing, and advanced TypeScript features like discriminated unions.  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Exercises  
 
-## React Compiler
+### 9.15: React Components with TypeScript  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Refactor a single-component React app into three components: **Header**, **Content**, and **Total**.  
+Each component receives data via props with properly defined TypeScript types.  
 
-## Expanding the ESLint configuration
+**Concepts practiced:**  
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Creating and typing React components  
+- Passing props between components  
+- Using interfaces for prop validation  
+- Basic project setup with Vite and TypeScript  
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 9.16: Advanced Typing and Discriminated Unions  
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Enhance the course application by defining detailed types for different course parts.  
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Create shared interfaces and extend them with specific fields (e.g., `description`, `groupProjectCount`, `backgroundMaterial`).  
+- Implement a `Part` component that uses **switch-based exhaustive type checking** to render each course part appropriately.  
+- Add a new course part type (`special`) with `requirements` as a string array.  
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Concepts practiced:**  
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Extending interfaces with common fields  
+- Discriminated union types  
+- Exhaustive type checking with `never`  
+- Conditional rendering based on type safety  
