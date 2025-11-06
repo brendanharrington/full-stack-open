@@ -1,0 +1,25 @@
+{
+  "name": "phonebook-cicd",
+  "version": "1.0.0",
+  "description": "An updated version of the phonebook project from parts 2 and 3 that implements a CI/CD-pipeline",
+  "homepage": "https://github.com/brendanharrington/phonebook-cicd#readme",
+  "bugs": {
+    "url": "https://github.com/brendanharrington/phonebook-cicd/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brendanharrington/phonebook-cicd.git"
+  },
+  "license": "ISC",
+  "author": "Brendan Harrington",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
