@@ -58,16 +58,18 @@ jobs:
 
       - name: Notify Discord - Success
         if: success()
-        uses: tsickert/discord-webhook@v7.0.0
+        uses: rjstone/discord-webhook-notify@v2.2.1
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           username: Discord Webhook Action
-          content: 'Deployed to Render successfully!'
+          text: Successfully deployed to Render!
+          severity: info
 
       - name: Notify Discord - Failure
         if: failure()
-        uses: tsickert/discord-webhook@v7.0.0
+        uses: rjstone/discord-webhook-notify@v2.2.1
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           username: Discord Webhook Action
-          content: 'Failed to deply to Render!'
+          text: Failed to deploy to Render!
+          severity: error
