@@ -58,18 +58,16 @@ jobs:
 
       - name: Notify Discord - Success
         if: success()
-        uses: rjstone/discord-webhook-notify@v2.2.1
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: Discord Webhook Action
-          text: Successfully deployed to Render!
-          severity: info
+          args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed to Render.'
 
       - name: Notify Discord - Failure
         if: failure()
-        uses: rjstone/discord-webhook-notify@v2.2.1
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: Discord Webhook Action
-          text: Failed to deploy to Render!
-          severity: error
+          args: 'Failed to deploy the project {{ EVENT_PAYLOAD.repository.full_name }} to Render.'
