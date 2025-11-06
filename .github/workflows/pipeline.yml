@@ -55,3 +55,19 @@ jobs:
           github_deployment: true
           deployment_environment: 'production'
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Discord - Success
+        if: success()
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          username: Discord Webhook Action
+          content: 'Deployed to Render successfully!'
+
+      - name: Notify Discord - Failure
+        if: failure()
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          username: Discord Webhook Action
+          content: 'Failed to deply to Render!'
