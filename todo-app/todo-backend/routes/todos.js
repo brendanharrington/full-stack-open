@@ -6,7 +6,8 @@ const router = express.Router();
 /* GET todos listing. */
 router.get('/', async (_, res) => {
   const todos = await Todo.find({})
-  await redis.setAsync('todos', Todo.countDocuments({}))
+  const todoCount = await redis.getAsync('todos')
+  await redis.setAsync('todos', todoCount)
   res.send(todos);
 });
 
@@ -16,7 +17,8 @@ router.post('/', async (req, res) => {
     text: req.body.text,
     done: false
   })
-  await redis.setAsync('todos', Todo.countDocuments({}))
+  const todoCount = parseInt(await redis.getAsync('todos') || 0)
+  await redis.setAsync('todos', todoCount + 1)
   res.send(todo);
 });
 

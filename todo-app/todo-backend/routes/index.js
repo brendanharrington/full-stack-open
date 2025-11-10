@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/statistics', async (req, res) => {
-  const todoCount = parseInt(await redis.getAsync('todos'));
+  const todoCount = parseInt(await redis.getAsync('todos') || 0);
 
   res.json({ added_todos: todoCount });
 });
