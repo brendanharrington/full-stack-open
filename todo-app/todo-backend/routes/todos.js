@@ -35,12 +35,22 @@ singleRouter.delete('/', async (req, res) => {
 
 /* GET todo. */
 singleRouter.get('/', async (req, res) => {
-  res.sendStatus(405); // Implement this
+  res.json(req.todo)
 });
 
 /* PUT todo. */
 singleRouter.put('/', async (req, res) => {
-  res.sendStatus(405); // Implement this
+  const { text, done } = req.body;
+
+  if (typeof text === 'undefined' && typeof done === 'undefined') {
+    return res.status(400).send({ error: 'No valid fields to update' })
+  }
+
+  if (typeof text !== 'undefined') req.todo.text = text
+  if (typeof done !== 'undefined') req.todo.done = done
+
+  const updatedTodo = await req.todo.save()
+  res.json(updatedTodo)
 });
 
 router.use('/:id', findByIdMiddleware, singleRouter)
