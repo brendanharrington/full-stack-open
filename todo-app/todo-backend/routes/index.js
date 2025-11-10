@@ -1,19 +1,21 @@
 const express = require('express');
-const redis = require('../redis')
+const redis = require('../redis');
 const router = express.Router();
 
-const configs = require('../util/config')
-
-let visits = 0
+const configs = require('../util/config');
 
 /* GET index data. */
 router.get('/', async (req, res) => {
-  visits++
+  const visitCount = parseInt(await redis.getAsync('visits') || 0) + 1;
+  await redis.setAsync('visits', visitCount)
+  
+  res.json({ ...configs, visits: visitCount });
+});
 
-  res.send({
-    ...configs,
-    visits
-  });
+router.get('/statistics', async (req, res) => {
+  const todoCount = parseInt(await redis.getAsync('todos'));
+
+  res.json({ added_todos: todoCount });
 });
 
 module.exports = router;
