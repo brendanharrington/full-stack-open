@@ -1,59 +1,135 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
+import * as personService from './services/persons';
 
 function App() {
-  const [persons, setPersons] = useState([
-    {
-      id: 0,
-      name: 'Person 0',
-      number: '000-000-0000',
-    },
-    {
-      id: 1,
-      name: 'Person 1',
-      number: '111-111-1111',
-    },
-    {
-      id: 2,
-      name: 'Person 2',
-      number: '222-222-2222',
-    },
-    {
-      id: 3,
-      name: 'Person 3',
-      number: '333-333-3333',
-    },
-    {
-      id: 4,
-      name: 'Person 4',
-      number: '444-444-4444',
-    },
-    {
-      id: 5,
-      name: 'Person 5',
-      number: '555-555-5555',
-    },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
 
-  const handleAdd = e => {
+  // Fetch persons on mount
+  useEffect(() => {
+    const fetchPersons = async () => {
+      try {
+        const data = await personService.getAll();
+        setPersons(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching persons:', err);
+        setError('Failed to load phonebook');
+        setLoading(false);
+      }
+    };
+
+    fetchPersons();
+  }, []);
+
+  const showMessage = (msg, isError = false) => {
+    setMessage({ text: msg, isError });
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
+
+  const handleAdd = async (e) => {
     e.preventDefault();
-    setName('');
-    setNumber('');
+
+    if (!name || !number) {
+      showMessage('Name and number are required', true);
+      return;
+    }
+
+    // Check if person already exists
+    const existingPerson = persons.find(
+      p => p.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${name} is already in the phonebook. Replace the old number with a new one?`
+      );
+
+      if (confirmUpdate) {
+        try {
+          const updatedPerson = await personService.update(existingPerson._id, {
+            name,
+            number,
+          });
+          setPersons(persons.map(p => 
+            p._id === existingPerson._id ? updatedPerson : p
+          ));
+          showMessage(`Updated ${name}'s number`);
+          setName('');
+          setNumber('');
+        } catch (err) {
+          console.error('Error updating person:', err);
+          showMessage('Failed to update person', true);
+        }
+      }
+      return;
+    }
+
+    try {
+      const newPerson = await personService.create({ name, number });
+      setPersons([...persons, newPerson]);
+      showMessage(`Added ${name}`);
+      setName('');
+      setNumber('');
+    } catch (err) {
+      console.error('Error adding person:', err);
+      showMessage('Failed to add person', true);
+    }
   };
 
-  const handleDelete = id => {
-    setPersons(persons.filter(p => p.id != id))
+  const handleDelete = async (id, name) => {
+    const confirmDelete = window.confirm(`Delete ${name}?`);
+    
+    if (confirmDelete) {
+      try {
+        await personService.remove(id);
+        setPersons(persons.filter(p => p._id !== id));
+        showMessage(`Deleted ${name}`);
+      } catch (err) {
+        console.error('Error deleting person:', err);
+        showMessage('Failed to delete person', true);
+      }
+    }
   };
+
+  if (loading) {
+    return <div>Loading phonebook...</div>;
+  }
+
+  if (error) {
+    return <div style={{ color: 'red' }}>{error}</div>;
+  }
 
   return (
     <>
       <h1>Phonebook</h1>
+      
+      {message && (
+        <div 
+          style={{
+            padding: '10px',
+            margin: '10px 0',
+            borderRadius: '5px',
+            backgroundColor: message.isError ? '#ffebee' : '#e8f5e9',
+            color: message.isError ? '#c62828' : '#2e7d32',
+            border: `1px solid ${message.isError ? '#ef9a9a' : '#a5d6a7'}`,
+          }}
+        >
+          {message.text}
+        </div>
+      )}
+
       <h2>Add a number</h2>
       <form onSubmit={handleAdd}>
         <label>
-          name
+          name{' '}
           <input 
             type='text' 
             value={name} 
@@ -62,7 +138,7 @@ function App() {
         </label>
         <br />
         <label>
-          number
+          number{' '}
           <input 
             type='text' 
             value={number} 
@@ -70,33 +146,38 @@ function App() {
           />
         </label>
         <br />
-        <button>add</button>
+        <button type='submit'>add</button>
       </form>
-      <p>{name}</p>
-      <p>{number}</p>
+
       <h2>Numbers</h2>
-      <table>
-        <thead>
-          <tr>
-            <th scope='col'>Name</th>
-            <th scope='col'>Number</th>
-            <th scope='col'></th>
-          </tr>
-        </thead>
-        <tbody>
-          {persons.map(p => (
-            <tr key={p.id}>
-              <td>{p.name}</td>
-              <td>{p.number}</td>
-              <td>
-                <button onClick={() => handleDelete(p.id)}>delete</button>
-              </td>
+      {persons.length === 0 ? (
+        <p>No contacts in phonebook</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th scope='col'>Name</th>
+              <th scope='col'>Number</th>
+              <th scope='col'></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {persons.map(p => (
+              <tr key={p._id}>
+                <td>{p.name}</td>
+                <td>{p.number}</td>
+                <td>
+                  <button onClick={() => handleDelete(p._id, p.name)}>
+                    delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
