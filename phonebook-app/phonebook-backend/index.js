@@ -28,6 +28,7 @@ mongoose.connect(MONGO_URL)
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error.message);
   });
+const isDbConnected = () => mongoose.connection && mongoose.connection.readyState === 1;
 
 // Routes
 app.get('/', (req, res) => {

@@ -207,3 +207,41 @@ docker-compose up --build
 - **Database**: MongoDB 7
 - **Proxy**: Nginx
 - **Containerization**: Docker & Docker Compose
+
+## Running locally (without Docker)
+
+If you prefer to run the frontend and backend directly on your machine (no Docker), the project supports that workflow. The backend requires a running MongoDB instance for persistence. You can either run a local MongoDB (no auth) or start the Docker Mongo service from the provided compose file.
+
+1. Start the backend (in one terminal):
+
+```bash
+cd phonebook-backend
+# Run the backend; it expects MONGO_URL to point to a running MongoDB.
+npm run dev
+
+# To use the authenticated Mongo started by docker-compose (recommended for parity with the dev stack):
+# MONGO_URL='mongodb://root:example@localhost:27017/the_database?authSource=admin' npm run dev
+```
+
+2. Start the frontend (in another terminal):
+
+```bash
+cd phonebook-frontend
+# By default the frontend proxies /api to http://localhost:3000
+npm run dev
+
+# If your backend runs on a different host/port, set BACKEND_URL:
+# BACKEND_URL='http://localhost:3001' npm run dev
+```
+
+3. Open the app in your browser at the Vite URL shown (usually http://localhost:5173). API requests to /api are proxied to the backend.
+
+Notes:
+- The backend requires MongoDB. If you don't have a local Mongo instance, start the Docker Mongo used by the dev compose file:
+
+```bash
+# start only Mongo from the dev compose file
+docker compose -f docker-compose.dev.yml up -d mongo
+```
+
+This README contains both Docker and local run instructions; choose the flow that fits your development setup.
