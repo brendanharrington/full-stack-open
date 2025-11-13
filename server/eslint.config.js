@@ -1,6 +1,5 @@
 import js from "@eslint/js";
 import globals from "globals";
-import pluginReact from "eslint-plugin-react";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
@@ -10,12 +9,6 @@ export default defineConfig([
     extends: ["js/recommended"],
     languageOptions: {
       globals: { ...globals.browser, ...globals.node }
-    }
-  },
-  pluginReact.configs.flat.recommended,
-  {
-    settings: {
-      react: { version: "detect" },
     }
   }
 ]);
