@@ -38,6 +38,8 @@ Blog.init({
   modelName: 'blog',
 });
 
+Blog.sync();
+
 app.use(express.json());
 
 app.get('/api/blogs', async (req, res) => {
@@ -49,7 +51,17 @@ app.post('/api/blogs', async (req, res) => {
   console.log(req.body);
   const blog = await Blog.create(req.body);
   res.json(blog);
-})
+});
+
+app.get('/api/blogs/:id', async (req, res) => {
+  const blog = await Blog.findByPk(req.params.id);
+
+  if (blog) {
+    res.json(blog);
+  } else {
+    res.status(404).end();
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
