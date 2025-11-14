@@ -18,8 +18,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
-  const user = await User.findByPk(req.params.id);
+router.get('/:username', async (req, res) => {
+  const user = await User.findOne({
+    where: { username: req.params.username }
+  });
   if (user) {
     res.json(user);
   } else {
@@ -27,12 +29,14 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
-  const user = await User.findByPk(req.params.id);
+router.put('/:username', async (req, res) => {
+  const user = await User.findOne({
+    where: { username: req.params.username }
+  });
   if (user) {
     await User.update(
       { username: req.body.username },
-      { where: { id: req.params.id } }
+      { where: { username: req.params.username } }
     );
     res.json(req.body.username)
   } else {
