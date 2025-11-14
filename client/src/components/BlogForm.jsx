@@ -18,7 +18,6 @@ const BlogForm = ({ addBlog }) => {
       author: author.trim() || null,
       url
     }
-    console.log(blog);
     await addBlog(blog);
     resetFields();
   }

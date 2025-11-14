@@ -16,7 +16,6 @@ const App = () => {
 
   const fetchBlogs = async () => {
     const response = await axios.get(`${BASE_URL}/api/blogs`);
-    console.log(response.data);
     setBlogs(response.data);
   };  
 
@@ -43,7 +42,6 @@ const App = () => {
 
   const deleteBlog = async (b) => {
     try {
-      console.log(b)
       if (window.confirm(`Delete "${b.title}" by "${b.author ?? 'unknown'}" from the list?`)) {
         await axios.delete(`${BASE_URL}/api/blogs/${b.id}`)
         fetchBlogs();
@@ -53,7 +51,6 @@ const App = () => {
         })
       }
     } catch (error) {
-      console.log(error);
       showNotification({
         message: `Error! Blog has already been deleted from the database...`,
         type: 'error'
@@ -63,7 +60,6 @@ const App = () => {
 
   const likeBlog = async (b) => {
     try {
-      console.log(b);
       await axios.put(`${BASE_URL}/api/blogs/${b.id}`, {
         likes: b.likes + 1
       });
@@ -73,7 +69,6 @@ const App = () => {
         type: 'success'
       });
     } catch (error) {
-      console.log(error);
       showNotification({
         message: 'Error! Blog has already been deleted from the database...',
         type: 'error'
