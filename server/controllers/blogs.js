@@ -4,57 +4,82 @@ import Blog from '../models/blog.js';
 
 const router = Router();
 
-router.get('/', async (req, res) => {
-  const blogs = await Blog.findAll();
-  res.json(blogs);
-});
-
-router.post('/', async (req, res) => {
-  console.log(req.body);
-  const blog = await Blog.create(req.body);
-  res.json(blog);
-});
-
 const blogFinder = async (req, res, next) => {
-  req.blog = await Blog.findByPk(req.params.id);
+  const blog = await Blog.findByPk(req.params.id);
+
+  if (!blog) {
+    return next({ name: 'BlogIdError', id: req.params.id });
+  }
+
+  req.blog = blog;
   next();
+  
 };
 
-router.get('/:id', blogFinder, async (req, res) => {
-  if (req.blog) {
+// eslint-disable-next-line no-unused-vars
+const errorHandler = (err, req, res, next) => {
+  switch (err.name) {
+    case 'SequelizeValidationError':
+      return res.status(422).json({
+        error: 'validation failed',
+        details: err.errors.map(e => e.message)
+      });
+
+    case 'BlogIdError':
+      return res.status(404).json({
+        error: 'invalid blog id',
+        details: `blog with id ${err.id} does not exist`
+      });
+
+    default:
+      return res.status(500).json({ error: 'internal server error' });
+  }
+}
+
+router.use('/:id', blogFinder);
+
+router.get('/', async (req, res, next) => {
+  try {
+    const blogs = await Blog.findAll();
+    res.json(blogs);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/', async (req, res, next) => {
+  try {
+    const blog = await Blog.create(req.body);
+    res.json(blog);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  res.json(req.blog);
+});
+
+router.delete('/:id', async (req, res, next) => {
+  try {
+    await Blog.destroy({ where: { id: req.params.id} });
     res.json(req.blog);
-  } else {
-    res.status(404).end();
+  } catch (err) {
+    next(err);
   }
 });
 
-router.delete('/:id', blogFinder, async (req, res) => {
-  if (req.blog) {
-    await Blog.destroy({
-      where: {
-        id: req.params.id
-      }
-    })
-    res.json(req.blog)
-  } else {
-    res.status(404).json({ error: 'not found' }).end()
-  }
-});
-
-router.put('/:id', blogFinder, async (req, res) => {
-  if (req.blog) {
+router.put('/:id', async (req, res, next) => {
+  try {
     await Blog.update(
       { likes: req.body.likes },
-      {
-        where: {
-          id: req.params.id
-        }
-      }
+      { where: { id: req.params.id } }
     );
-    res.json(req.blog)
-  } else {
-    res.status(404).json({ error: 'not found' }).end()
+  } catch (err) {
+    next(err);
   }
-})
+});
+
+router.use(errorHandler);
 
 export { router };
