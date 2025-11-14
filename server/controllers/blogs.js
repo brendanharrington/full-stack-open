@@ -41,4 +41,20 @@ router.delete('/:id', blogFinder, async (req, res) => {
   }
 });
 
+router.put('/:id', blogFinder, async (req, res) => {
+  if (req.blog) {
+    await Blog.update(
+      { likes: req.body.likes },
+      {
+        where: {
+          id: req.params.id
+        }
+      }
+    );
+    res.json(req.blog)
+  } else {
+    res.status(404).json({ error: 'not found' }).end()
+  }
+})
+
 export { router };
