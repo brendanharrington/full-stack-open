@@ -1,12 +1,11 @@
-import 'dotenv/config';
 import { Sequelize, Model, DataTypes } from 'sequelize';
 import express from 'express';
 
+import { PORT, DATABASE_URL } from './util/config';
+
 const app = express();
 
-const PORT = process.env.PORT || 3001;
-
-const sequelize = new Sequelize(process.env.DATABASE_URL);
+const sequelize = new Sequelize(DATABASE_URL);
 
 class Blog extends Model {};
 
