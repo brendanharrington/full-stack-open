@@ -1,11 +1,10 @@
-import { Sequelize, Model, DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import express from 'express';
 
-import { PORT, DATABASE_URL } from './util/config';
+import { PORT } from './util/config';
+import { connectToDatabase } from './util/db';
 
 const app = express();
-
-const sequelize = new Sequelize(DATABASE_URL);
 
 class Blog extends Model {};
 
@@ -77,6 +76,11 @@ app.delete('/blogs/:id', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const start = async () => {
+  await connectToDatabase();
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+start();
