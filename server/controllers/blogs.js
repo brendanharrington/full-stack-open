@@ -1,19 +1,21 @@
-import {Router as router} from 'express';
+import { Router } from 'express';
 
-import Blog from '../models';
+import Blog from '../models/blog.js';
 
-router.get('/blogs', async (req, res) => {
+const router = Router();
+
+router.get('/', async (req, res) => {
   const blogs = await Blog.findAll();
   res.json(blogs);
 });
 
-router.post('/blogs', async (req, res) => {
+router.post('/', async (req, res) => {
   console.log(req.body);
   const blog = await Blog.create(req.body);
   res.json(blog);
 });
 
-router.get('/blogs/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   const blog = await Blog.findByPk(req.params.id);
 
   if (blog) {
@@ -23,7 +25,7 @@ router.get('/blogs/:id', async (req, res) => {
   }
 });
 
-router.delete('/blogs/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   const blog = await Blog.findByPk(req.params.id);
   
   if (blog) {
@@ -38,4 +40,4 @@ router.delete('/blogs/:id', async (req, res) => {
   }
 });
 
-export default router;
+export { router };
