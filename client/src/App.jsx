@@ -1,86 +1,94 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const blogs = [
-  {
-    title: 'Title 0',
-    author: 'Author 0',
-    url: 'www.example-0.com'
-  },
-  {
-    title: 'Title 1',
-    author: 'Author 1',
-    url: 'www.example-1.com'
-  },
-  {
-    title: 'Title 2',
-    author: 'Author 2',
-    url: 'www.example-2.com'
+import Notification from './components/Notification';
+import BlogForm from './components/BlogForm';
+
+const BASE_URL = 'http://localhost:5173';
+
+const App = () => {
+  const [blogs, setBlogs] = useState([]);
+  const [notification, setNotification] = useState(null);
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  const fetchBlogs = async () => {
+    const response = await axios.get(`${BASE_URL}/api/blogs`);
+    console.log(response.data);
+    setBlogs(response.data);
+  };  
+
+  const showNotification = (n) => {
+    setNotification(n);
+    setTimeout(() => setNotification(null), 5000);
+  }; 
+
+  const addBlog = async (blog) => {
+    try {
+      await axios.post(`${BASE_URL}/api/blogs`, blog);
+      fetchBlogs();
+      showNotification({
+        message: 'Blog added successfully!',
+        type: 'success'
+      });
+    } catch (error) {
+      showNotification({
+        message: `Error: ${error}`,
+        type: 'error'
+      });
+    }
+  };
+
+  const deleteBlog = async (b) => {
+    try {
+      console.log(b)
+      if (window.confirm(`Delete "${b.title}" by "${b.author ?? 'unknown'}" from the list?`)) {
+        await axios.delete(`${BASE_URL}/api/blogs/${b.id}`)
+        fetchBlogs();
+        showNotification({
+          message: 'Blog deleted successfully!',
+          type: 'success'
+        })
+      }
+    } catch (error) {
+      console.log(error);
+      showNotification({
+        message: `Error! Blog has already been deleted from the database...`,
+        type: 'error'
+      });
+    }
   }
-]
 
-function App() {
-  // const [blogs, setBlogs] = useState([]);
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    setTitle('');
-    setAuthor('');
-    setUrl('');
-  }
+  if (!blogs.length) return 'Loading...';
 
   return (
     <>
       <h1>Blog List Application</h1>
+      {notification && <Notification {...notification} />}
       <h2>Add a Blog</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          title
-          <input 
-            type='text'
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-          />
-        </label>
-        <br />
-        <label>
-          author
-          <input 
-            type='text'
-            value={author}
-            onChange={e => setAuthor(e.target.value)}
-          />
-        </label>
-        <br />
-        <label>
-          url
-          <input 
-            type='text'
-            value={url}
-            onChange={e => setUrl(e.target.value)}
-          />
-        </label>
-        <br />
-        <button type='submit'>add</button>
-      </form>
-      <div>{title}</div>
-      <div>{author}</div>
-      <div>{url}</div>
+      <BlogForm addBlog={addBlog} />
       <h2>Blogs</h2>
       <table style={{ width: '100%', textAlign: 'center', border: 'solid' }}>
         <thead style={{ backgroundColor: 'lightgrey' }}>
-          <th scope='col'>Title</th>
-          <th scope='col'>Author</th>
-          <th scope='col'>URL</th>
+          <tr>
+            <th scope='col'>Title</th>
+            <th scope='col'>Author</th>
+            <th scope='col'>URL</th>
+            <th scope='col'>Likes</th>
+          </tr>
         </thead>
         <tbody>
-          {blogs.map(b => (
-            <tr>
+          {blogs.map((b, idx) => (
+            <tr key={idx}>
               <td>{b.title}</td>
-              <td>{b.author}</td>
+              <td>{b.author ?? 'unknown'}</td>
               <td>{b.url}</td>
+              <td>{b.likes}</td>
+              <td>
+                <button onClick={() => deleteBlog(b)}>delete</button>
+              </td>
             </tr>
           ))}
         </tbody>
