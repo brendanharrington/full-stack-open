@@ -15,26 +15,27 @@ router.post('/', async (req, res) => {
   res.json(blog);
 });
 
-router.get('/:id', async (req, res) => {
-  const blog = await Blog.findByPk(req.params.id);
+const blogFinder = async (req, res, next) => {
+  req.blog = await Blog.findByPk(req.params.id);
+  next();
+};
 
-  if (blog) {
-    res.json(blog);
+router.get('/:id', blogFinder, async (req, res) => {
+  if (req.blog) {
+    res.json(req.blog);
   } else {
     res.status(404).end();
   }
 });
 
-router.delete('/:id', async (req, res) => {
-  const blog = await Blog.findByPk(req.params.id);
-  
-  if (blog) {
+router.delete('/:id', blogFinder, async (req, res) => {
+  if (req.blog) {
     await Blog.destroy({
       where: {
         id: req.params.id
       }
     })
-    res.json(blog)
+    res.json(req.blog)
   } else {
     res.status(404).json({ error: 'not found' }).end()
   }
