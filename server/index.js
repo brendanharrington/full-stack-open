@@ -8,7 +8,7 @@ import { router as blogsRouter } from './controllers/blogs.js';
 
 app.use(express.json());
 
-app.use('/api/blogs', blogsRouter);
+app.use('/blogs', blogsRouter);
 
 const start = async () => {
   await connectToDatabase();
