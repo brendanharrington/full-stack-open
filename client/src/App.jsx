@@ -61,6 +61,26 @@ const App = () => {
     }
   }
 
+  const likeBlog = async (b) => {
+    try {
+      console.log(b);
+      await axios.put(`${BASE_URL}/api/blogs/${b.id}`, {
+        likes: b.likes + 1
+      });
+      fetchBlogs();
+      showNotification({
+        message: 'Blog deleted successfully!',
+        type: 'success'
+      });
+    } catch (error) {
+      console.log(error);
+      showNotification({
+        message: 'Error! Blog has already been deleted from the database...',
+        type: 'error'
+      })
+    }
+  }
+
   if (!blogs.length) return 'Loading...';
 
   return (
@@ -86,6 +106,9 @@ const App = () => {
               <td>{b.author ?? 'unknown'}</td>
               <td>{b.url}</td>
               <td>{b.likes}</td>
+              <td>
+                <button onClick={() => likeBlog(b)}>like</button>
+              </td>
               <td>
                 <button onClick={() => deleteBlog(b)}>delete</button>
               </td>
