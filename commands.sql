@@ -1,3 +1,4 @@
+-- blogs
 CREATE TABLE blogs (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
@@ -11,3 +12,14 @@ INSERT INTO blogs (title, author, url) VALUES ('A blog without likes', 'First Au
 INSERT INTO blogs (title, author, url, likes) VALUES ('A blog', 'Second Author', 'www.no-author-no-likes.com', 10);
 
 SELECT * FROM blogs;
+
+-- users
+
+INSERT INTO users (username, name) VALUES ('root', 'Superuser');
+
+SELECT * FROM users;
+
+-- reset
+
+DROP TABLE blogs;
+DROP TABLE users;

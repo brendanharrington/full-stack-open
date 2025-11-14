@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import Blog from '../models/blog.js';
+import User from '../models/user.js';
 import { blogFinder, errorHandler } from '../middleware.js';
 
 const router = Router();
@@ -18,7 +19,8 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const blog = await Blog.create(req.body);
+    const user = await User.findOne();
+    const blog = await Blog.create({...req.body, userId: user.id });
     res.json(blog);
   } catch (err) {
     next(err);
@@ -44,6 +46,7 @@ router.put('/:id', async (req, res, next) => {
       { likes: req.body.likes },
       { where: { id: req.params.id } }
     );
+    res.json(req.blog);
   } catch (err) {
     next(err);
   }

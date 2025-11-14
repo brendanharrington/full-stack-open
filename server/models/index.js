@@ -1,5 +1,11 @@
-import Blog from "./blog";
+import { sequelize } from '../util/db.js';
 
-Blog.sync();
+import Blog from './blog.js';
+import User from './user.js';
 
-export default Blog;
+User.hasMany(Blog);
+Blog.belongsTo(User);
+
+await sequelize.sync({ alter: true });
+
+export { Blog, User };
