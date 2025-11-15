@@ -44,8 +44,9 @@ router.put('/:id', async (req, res, next) => {
   try {
     await Blog.update(
       { likes: req.body.likes },
-      { where: { id: req.params.id } }
+      { where: { id: req.params.id }, returning: true }
     );
+    await req.blog.reload();
     res.json(req.blog);
   } catch (err) {
     next(err);

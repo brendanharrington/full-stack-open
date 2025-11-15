@@ -1,8 +1,11 @@
 import { Router } from 'express';
 
 import User from '../models/user.js';
+import { userFinder, errorHandler } from '../middleware.js';
 
 const router = Router();
+
+router.use('/:username', userFinder);
 
 router.get('/', async (req, res) => {
   const users = await User.findAll();
@@ -19,29 +22,22 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/:username', async (req, res) => {
-  const user = await User.findOne({
-    where: { username: req.params.username }
-  });
-  if (user) {
-    res.json(user);
-  } else {
-    res.status(404).end();
-  }
+  res.json(req.user);
 });
 
-router.put('/:username', async (req, res) => {
-  const user = await User.findOne({
-    where: { username: req.params.username }
-  });
-  if (user) {
+router.put('/:username', async (req, res, next) => {
+  try {
     await User.update(
       { username: req.body.username },
       { where: { username: req.params.username } }
     );
-    res.json(req.body.username)
-  } else {
-    res.status(404).end();
+    await req.user.reload();
+    res.json(req.user);
+  } catch (err) {
+    next(err);
   }
 });
+
+router.use(errorHandler);
 
 export { router };

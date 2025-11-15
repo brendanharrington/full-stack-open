@@ -1,4 +1,5 @@
 import Blog from './models/blog.js'
+import User from './models/user.js';
 
 export const blogFinder = async (req, res, next) => {
   const blog = await Blog.findByPk(req.params.id);
@@ -9,6 +10,19 @@ export const blogFinder = async (req, res, next) => {
 
   req.blog = blog;
   next();
+};
+
+export const userFinder = async (req, res, next) => {
+  const user = await User.findOne({
+    where: { username: req.params.username }
+  });
+
+  if (!user) {
+    return next({ name: 'UsernameError', username: req.params.username });
+  }
+
+  req.user = user;
+  next()
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -23,7 +37,13 @@ export const errorHandler = (err, req, res, next) => {
     case 'BlogIdError':
       return res.status(404).json({
         error: 'invalid blog id',
-        details: `blog with id ${err.id} does not exist`
+        details: `blog with id '${err.id}' does not exist`
+      });
+
+    case 'UsernameError':
+      return res.status(404).json({
+        error: 'invalid username',
+        details: `user with username '${err.username}' does not exist`
       });
 
     default:
