@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import Blog from '../models/blog.js';
 import User from '../models/user.js';
-import { blogFinder, errorHandler } from '../middleware.js';
+import { blogFinder, errorHandler, tokenExtractor } from '../middleware.js';
 
 const router = Router();
 
@@ -10,17 +10,23 @@ router.use('/:id', blogFinder);
 
 router.get('/', async (req, res, next) => {
   try {
-    const blogs = await Blog.findAll();
+    const blogs = await Blog.findAll({
+      attributes: { exclude: ['userId'] },
+      include: {
+        model: User,
+        attributes: ['name'],
+      }
+    });
     res.json(blogs);
   } catch (err) {
     next(err);
   }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', tokenExtractor, async (req, res, next) => {
   try {
-    const user = await User.findOne();
-    const blog = await Blog.create({...req.body, userId: user.id });
+    const user = await User.findByPk(req.decodedToken.id);
+    const blog = await Blog.create({...req.body, userId: user.id, date: new Date() });
     res.json(blog);
   } catch (err) {
     next(err);

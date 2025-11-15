@@ -1,5 +1,24 @@
+import jwt from 'jsonwebtoken';
+
+import { SECRET } from './util/config.js';
+
 import Blog from './models/blog.js'
 import User from './models/user.js';
+
+export const tokenExtractor = (req, res, next) => {
+  const authorization = req.get('authorization');
+
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    try {
+      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+    } catch {
+      return res.status(401).json({ error: 'token invalid' });
+    }
+  } else {
+    return res.status(401).json({ error: 'token missing' });
+  }
+  next();
+}
 
 export const blogFinder = async (req, res, next) => {
   const blog = await Blog.findByPk(req.params.id);
@@ -47,6 +66,7 @@ export const errorHandler = (err, req, res, next) => {
       });
 
     default:
+      console.log(err)
       return res.status(500).json({ error: 'internal server error' });
   }
 }
