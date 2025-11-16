@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import User from '../models/user.js';
 import Blog from '../models/blog.js';
-import { userFinder, errorHandler } from '../middleware.js';
+import { isAdmin, tokenExtractor, userFinder, errorHandler } from '../util/middleware.js';
 
 const router = Router();
 
@@ -31,14 +31,25 @@ router.get('/:username', async (req, res) => {
   res.json(req.user);
 });
 
-router.put('/:username', async (req, res, next) => {
+router.put('/:username', tokenExtractor, isAdmin, async (req, res, next) => {
   try {
-    await User.update(
-      { username: req.body.username },
-      { where: { username: req.params.username } }
-    );
-    await req.user.reload();
-    res.json(req.user);
+    if (req.body.username) {
+      await User.update(
+        { username: req.body.username },
+        { where: { username: req.params.username } }
+      );
+      await req.user.reload();
+      res.json(req.user);
+    }
+
+    if (req.body.disabled !== undefined) {
+      await User.update(
+        { disabled: req.body.disabled },
+        { where: { username: req.params.username } }
+      );
+      await req.user.reload();
+      res.json(req.user);
+    }
   } catch (err) {
     next(err);
   }

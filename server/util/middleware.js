@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 
-import { SECRET } from './util/config.js';
+import { SECRET } from './config.js';
 
-import Blog from './models/blog.js'
-import User from './models/user.js';
+import Blog from '../models/blog.js'
+import User from '../models/user.js';
 
 export const tokenExtractor = (req, res, next) => {
   const authorization = req.get('authorization');
@@ -17,6 +17,20 @@ export const tokenExtractor = (req, res, next) => {
   } else {
     return res.status(401).json({ error: 'token missing' });
   }
+  next();
+};
+
+export const isAdmin = async (req, res, next) => {
+  const user = await User.findByPk(req.decodedToken.id);
+
+  if (req.body.username) {
+    return next();
+  };
+
+  if (!user.admin) {
+    return next({ name: 'PermissionError', id: user.id });
+  }
+
   next();
 }
 
@@ -69,6 +83,12 @@ export const errorHandler = (err, req, res, next) => {
       return res.status(409).json({
         error: 'invalid username',
         details: `user with username ${err.errors[0].value} already exists!`
+      });
+    
+    case 'PermissionError':
+      return res.status(401).json({
+        error: 'missing permissions',
+        details: `user with id ${err.id} does not have admin permissions`
       });
 
     default:

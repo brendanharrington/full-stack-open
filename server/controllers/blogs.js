@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 
 import Blog from '../models/blog.js';
 import User from '../models/user.js';
-import { blogFinder, errorHandler, tokenExtractor } from '../middleware.js';
+import { blogFinder, errorHandler, tokenExtractor } from '../util/middleware.js';
 
 const router = Router();
 
