@@ -7,7 +7,7 @@ const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const { showNotification } = useOutletContext();
+  const { showNotification, user, setUser } = useOutletContext();
   const nav = useNavigate();
 
   const resetFields = () => {
@@ -15,12 +15,13 @@ const LoginForm = () => {
     setPassword('');
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      login(username, password);
+      const user = await login(username, password);
+      setUser(user);
       showNotification({
-        message: 'Welcome back!',
+        message: `Welcome back, ${user.name}!`,
         type: 'success'
       });
       resetFields();
@@ -28,10 +29,14 @@ const LoginForm = () => {
     } catch (err) {
       console.log(err);
       showNotification({
-        message: 'Error!',
+        message: `Error: ${err.response.data.error}`,
         type: 'error'
       });
     }
+  }
+
+  if (user?.name && user?.user && user?.token) {
+    return <h2>Already logged in as {user.name}</h2>
   }
 
   return (

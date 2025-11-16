@@ -1,6 +1,18 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
-const NavBar = () => {
+const NavBar = ({ user, setUser, showNotification }) => {
+  const nav = useNavigate();
+
+  const handleLogout = () => {
+    showNotification({
+      message: `Bye, ${user.name}!`,
+      type: 'success'
+    });
+    setUser(null);
+    localStorage.clear();
+    nav('/');
+  };
+
   return (
     <nav>
       <div className='nav-section'>
@@ -10,8 +22,15 @@ const NavBar = () => {
         <Link to='new'>create new</Link>
       </div>
       <div className='nav-section'>
-        <Link to='login'>login</Link>
-        <Link to='signup'>sign up</Link>
+        {user
+          ? <>
+              <div>logged in as {user.name}</div>
+              <button onClick={handleLogout}>logout</button>
+            </>
+          : <>
+              <button onClick={() => nav('login')}>login</button>
+              <button onClick={() => nav('signup')}>sign up</button>
+            </>}
       </div>
     </nav>
   )

@@ -5,23 +5,6 @@ import blogService from '../services/blogs';
 const Blogs = () => {
   const { blogs, fetchData, showNotification } = useOutletContext();
 
-  const handleDelete = async (blog) => {
-    try {
-      await blogService.remove(blog);
-      fetchData();
-      showNotification({
-        message: 'Blog deleted successfully!',
-        type: 'success'
-      });
-    } catch (err) {
-      console.log(err);
-      showNotification({
-        message: `Error! Blog has already been deleted from the database...`,
-        type: 'error'
-      });
-    }
-  };
-
   const handleLike = async (blog) => {
     try {
       await blogService.like(blog);
@@ -49,7 +32,6 @@ const Blogs = () => {
           <tr>
             <th scope='col'>Title</th>
             <th scope='col'>Author</th>
-            <th scope='col'>URL</th>
             <th scope='col'>Likes</th>
           </tr>
         </thead>
@@ -60,13 +42,9 @@ const Blogs = () => {
                 <Link to={`/blogs/${b.id}`}>{b.title}</Link>
               </td>
               <td>{b.author ?? 'unknown'}</td>
-              <td>{b.url}</td>
               <td>{b.likes}</td>
               <td>
                 <button onClick={() => handleLike(b)}>like</button>
-              </td>
-              <td>
-                <button onClick={() => handleDelete(b)}>delete</button>
               </td>
             </tr>
           ))}

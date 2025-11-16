@@ -9,7 +9,7 @@ const BlogForm = () => {
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
 
-  const { fetchData, showNotification } = useOutletContext();
+  const { fetchData, showNotification, user } = useOutletContext();
 
   const nav = useNavigate();
   
@@ -21,7 +21,7 @@ const BlogForm = () => {
 
   const handleAdd = async (blog) => {
     try {
-      await blogService.add(blog);
+      await blogService.add(blog, user.token);
       fetchData();
       showNotification({
         message: 'Blog added successfully!',

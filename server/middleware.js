@@ -65,6 +65,12 @@ export const errorHandler = (err, req, res, next) => {
         details: `user with username '${err.username}' does not exist`
       });
 
+    case 'SequelizeUniqueConstraintError':
+      return res.status(409).json({
+        error: 'invalid username',
+        details: `user with username ${err.errors[0].value} already exists!`
+      });
+
     default:
       console.log(err)
       return res.status(500).json({ error: 'internal server error' });

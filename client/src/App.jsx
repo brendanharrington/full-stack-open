@@ -12,9 +12,15 @@ const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [notification, setNotification] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetchData();
+
+    if (localStorage.length) {
+      const { token, user, name } = localStorage;
+      setUser({ token, user, name });
+    }
   }, []);
 
   const fetchData = async () => {
@@ -29,16 +35,24 @@ const App = () => {
     setTimeout(() => setNotification(null), 5000);
   };
 
+  const context = {
+    blogs, setBlogs, 
+    authors, setAuthors, 
+    notification, showNotification, 
+    user, setUser,
+    fetchData
+  };
+
   return (
     <>
-      <NavBar />
+      <NavBar user={user} setUser={setUser} showNotification={showNotification} />
 
       <h1>Blog List Application</h1>
 
       {notification && <Notification {...notification} />}
       
       <main>
-        <Outlet context={{blogs, setBlogs, notification, showNotification, fetchData, authors, setAuthors}}/>
+        <Outlet context={context}/>
       </main>
     </>
   )
