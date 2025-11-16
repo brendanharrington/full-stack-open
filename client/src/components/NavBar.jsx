@@ -19,7 +19,7 @@ const NavBar = ({ user, setUser, showNotification }) => {
         <Link to='/'>home</Link>
         <Link to='blogs'>blogs</Link>
         <Link to='authors'>authors</Link>
-        <Link to='new'>create new</Link>
+        {user && <Link to='new'>create new</Link>}
       </div>
       <div className='nav-section'>
         {user

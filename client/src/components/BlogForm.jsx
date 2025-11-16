@@ -46,6 +46,10 @@ const BlogForm = () => {
     resetFields();
     nav('../blogs');
   }
+
+  if (!user) {
+    return <h2>Not logged in!</h2>
+  }
   
   return (
     <>
