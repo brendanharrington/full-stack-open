@@ -5,6 +5,11 @@ nav {
   border-bottom: 1px solid black;
 }
 
+.nav-section {
+  display: flex;
+  gap: 10px;
+}
+
 table {
   width: 100%;
   text-align: center;

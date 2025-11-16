@@ -1,14 +1,14 @@
-import { useOutletContext } from 'react-router';
+import { useOutletContext, Link } from 'react-router';
 
-import { remove, like } from '../services/blogService';
+import blogService from '../services/blogs';
 
 const Blogs = () => {
-  const { blogs, fetchBlogs, showNotification } = useOutletContext();
+  const { blogs, fetchData, showNotification } = useOutletContext();
 
   const handleDelete = async (blog) => {
     try {
-      await remove(blog);
-      fetchBlogs();
+      await blogService.remove(blog);
+      fetchData();
       showNotification({
         message: 'Blog deleted successfully!',
         type: 'success'
@@ -24,8 +24,8 @@ const Blogs = () => {
 
   const handleLike = async (blog) => {
     try {
-      await like(blog);
-      fetchBlogs();
+      await blogService.like(blog);
+      fetchData();
       showNotification({
         message: `Added a like to "${blog.title}" by ${blog.author}!`,
         type: 'success'
@@ -56,7 +56,9 @@ const Blogs = () => {
         <tbody>
           {blogs.map((b, idx) => (
             <tr key={idx}>
-              <td>{b.title}</td>
+              <td>
+                <Link to={`/blogs/${b.id}`}>{b.title}</Link>
+              </td>
               <td>{b.author ?? 'unknown'}</td>
               <td>{b.url}</td>
               <td>{b.likes}</td>

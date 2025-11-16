@@ -10,23 +10,30 @@ const config = {
   }
 };
 
-export const getAll = async () => {
+const getAll = async () => {
   const res = await axios.get(`${URL}/api/blogs`);
   return res.data;
 };
 
-export const remove = async (blog) => {
+const remove = async (blog) => {
   if (window.confirm(`Delete "${blog.title}" by "${blog.author ?? 'unknown'}" from the list?`)) {
     await axios.delete(`${URL}/api/blogs/${blog.id}`);
   }
 };
 
-export const like = async (blog) => {
+const like = async (blog) => {
   await axios.put(`${URL}/api/blogs/${blog.id}`, {
     likes: blog.likes + 1
   });
 };
 
-export const add = async (blog) => {
+const add = async (blog) => {
   await axios.post(`${URL}/api/blogs`, blog, config);
+};
+
+const getById = async (id) => {
+  const res = await axios.get(`${URL}/api/blogs/${id}`);
+  return res.data;
 }
+
+export default { getAll, remove, like, add, getById };

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router';
 
-import { add } from '../services/blogService';
+import blogService from '../services/blogs';
 
 
 const BlogForm = () => {
@@ -9,7 +9,7 @@ const BlogForm = () => {
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
 
-  const { fetchBlogs, showNotification } = useOutletContext();
+  const { fetchData, showNotification } = useOutletContext();
 
   const nav = useNavigate();
   
@@ -21,8 +21,8 @@ const BlogForm = () => {
 
   const handleAdd = async (blog) => {
     try {
-      await add(blog);
-      fetchBlogs();
+      await blogService.add(blog);
+      fetchData();
       showNotification({
         message: 'Blog added successfully!',
         type: 'success'
