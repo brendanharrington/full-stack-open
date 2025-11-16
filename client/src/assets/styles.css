@@ -1,0 +1,12 @@
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px 16px 10px;
+  border-bottom: 1px solid black;
+}
+
+table {
+  width: 100%;
+  text-align: center;
+  border: solid;
+}
