@@ -23,3 +23,11 @@ export const signup = async (username, name) => {
 
   return user;
 };
+
+export const update = async (prevUsername, username) => {
+  const res = await axios.put(`${URL}/api/users/${prevUsername}`, { username });
+
+  localStorage.setItem('user', username);
+
+  return res.data;
+}

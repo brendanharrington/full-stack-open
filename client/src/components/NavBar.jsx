@@ -25,6 +25,7 @@ const NavBar = ({ user, setUser, showNotification }) => {
         {user
           ? <>
               <div>logged in as {user.name}</div>
+              <button onClick={() => nav('profile')}>profile</button>
               <button onClick={handleLogout}>logout</button>
             </>
           : <>
