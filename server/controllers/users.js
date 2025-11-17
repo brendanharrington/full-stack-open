@@ -7,8 +7,6 @@ import Team from '../models/team.js';
 
 const router = Router();
 
-router.use('/:username', userFinder);
-
 router.get('/', async (req, res) => {
   const users = await User.findAll({
     include: [
@@ -37,37 +35,8 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.get('/:username', async (req, res) => {
-  res.json(req.user);
-});
-
-router.put('/:username', tokenExtractor, isAdmin, async (req, res, next) => {
-  try {
-    if (req.body.username) {
-      await User.update(
-        { username: req.body.username },
-        { where: { username: req.params.username } }
-      );
-      await req.user.reload();
-      res.json(req.user);
-    }
-
-    if (req.body.disabled !== undefined) {
-      await User.update(
-        { disabled: req.body.disabled },
-        { where: { username: req.params.username } }
-      );
-      await req.user.reload();
-      res.json(req.user);
-    }
-  } catch (err) {
-    next(err);
-  }
-});
-
 router.get('/:id', async (req, res) => {
   const user = await User.findByPk(req.params.id, {
-    attributes: { exclude: [''] },
     include: [
       {
         model: Blog,
@@ -97,6 +66,32 @@ router.get('/:id', async (req, res) => {
     res.status(404).end();
   }
 });
+
+router.put('/:username', userFinder, tokenExtractor, isAdmin, async (req, res, next) => {
+  try {
+    if (req.body.username) {
+      await User.update(
+        { username: req.body.username },
+        { where: { username: req.params.username } }
+      );
+      await req.user.reload();
+      res.json(req.user);
+    }
+
+    if (req.body.disabled !== undefined) {
+      await User.update(
+        { disabled: req.body.disabled },
+        { where: { username: req.params.username } }
+      );
+      await req.user.reload();
+      res.json(req.user);
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 
 router.use(errorHandler);
 
