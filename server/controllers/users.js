@@ -3,6 +3,7 @@ import { Router } from 'express';
 import User from '../models/user.js';
 import Blog from '../models/blog.js';
 import { isAdmin, tokenExtractor, userFinder, errorHandler } from '../util/middleware.js';
+import Team from '../models/team.js';
 
 const router = Router();
 
@@ -10,10 +11,19 @@ router.use('/:username', userFinder);
 
 router.get('/', async (req, res) => {
   const users = await User.findAll({
-    include: {
-      model: Blog,
-      attributes: { exclude: ['userId'] }
-    }
+    include: [
+      {
+        model: Blog,
+        attributes: { exclude: ['userId'] }
+      },
+      {
+        model: Team,
+        attributes: ['name', 'id'],
+        through: {
+          attributes: []
+        }
+      }
+    ]
   });
   res.json(users);
 });
