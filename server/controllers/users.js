@@ -65,6 +65,39 @@ router.put('/:username', tokenExtractor, isAdmin, async (req, res, next) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  const user = await User.findByPk(req.params.id, {
+    attributes: { exclude: [''] },
+    include: [
+      {
+        model: Blog,
+        attributes: { exclude: ['userId'] }
+      },
+      {
+        model: Blog,
+        as: 'marked_blogs',
+        attributes: { exclude: ['userId'] },
+        through: { attributes: [] },
+        include: {
+          model: User,
+          attributes: ['name']
+        }
+      },
+      {
+        model: Team,
+        attributes: ['name', 'id'],
+        through: { attributes: [] }
+      }
+    ]
+  });
+
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404).end();
+  }
+});
+
 router.use(errorHandler);
 
 export { router };
