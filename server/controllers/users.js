@@ -4,6 +4,7 @@ import User from '../models/user.js';
 import Blog from '../models/blog.js';
 import { isAdmin, tokenExtractor, userFinder, errorHandler } from '../util/middleware.js';
 import Team from '../models/team.js';
+import UserBlogs from '../models/user_blogs.js';
 
 const router = Router();
 
@@ -40,17 +41,15 @@ router.get('/:id', async (req, res) => {
     include: [
       {
         model: Blog,
-        attributes: { exclude: ['userId'] }
-      },
-      {
-        model: Blog,
         as: 'marked_blogs',
         attributes: { exclude: ['userId'] },
         through: { attributes: [] },
-        include: {
-          model: User,
-          attributes: ['name']
-        }
+        include: [
+          {
+            model: User,
+            attributes: ['name']
+          },
+        ]
       },
       {
         model: Team,
