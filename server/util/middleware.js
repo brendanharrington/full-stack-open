@@ -12,6 +12,7 @@ export const tokenExtractor = (req, res, next) => {
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     try {
       req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+      req.params.username = req.decodedToken.username;
     } catch {
       return res.status(401).json({ error: 'token invalid' });
     }
@@ -27,6 +28,8 @@ export const isAdmin = async (req, res, next) => {
   if (req.body.username) {
     return next();
   };
+
+  console.log(user.toJSON())
 
   if (!user.admin) {
     return next({ name: 'PermissionError', id: user.id });
@@ -53,6 +56,12 @@ export const userFinder = async (req, res, next) => {
 
   if (!user) {
     return next({ name: 'UsernameError', username: req.params.username });
+  }
+
+  if (user.disabled) {
+    return res.status(401).json({
+      error: 'account disabled, please contact admin'
+    });
   }
 
   req.user = user;
@@ -114,7 +123,13 @@ export const errorHandler = (err, req, res, next) => {
       return res.status(404).json({
         error: 'user blog not found',
         details: `user with id ${req.decodedToken.id} does not have a book with id ${req.blogId} in their reading list`
-      })
+      });
+
+    case 'ListPermissionError':
+      return res.status(401).json({
+        error: 'cannot add blog',
+        details: `user does not have permission to add a blog to that list`
+      });
 
     default:
       console.log(err)

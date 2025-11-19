@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import UserBlogs from '../models/user_blogs.js';
-import { tokenExtractor, errorHandler, userBlogFinder } from '../util/middleware.js';
+import { tokenExtractor, errorHandler, userBlogFinder, userFinder } from '../util/middleware.js';
 
 const router = Router();
 
@@ -8,8 +8,12 @@ router.get('/', async (req, res) => {
   res.json('lists')
 });
 
-router.post('/', async (req, res) => {
+router.post('/', tokenExtractor, userFinder, async (req, res, next) => {
   try {
+    if (req.decodedToken.id !== req.body.userId) {
+      return next({ name: 'ListPermissionError' })
+    }
+
     const userBlog = await UserBlogs.create(req.body);
     res.json(userBlog);
   } catch (err) {
