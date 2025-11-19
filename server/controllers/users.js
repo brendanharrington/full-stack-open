@@ -29,6 +29,12 @@ router.post('/', async (req, res, next) => {
 });
 
 router.get('/:id', async (req, res) => {
+  let where = {};
+
+  if (req.query.read) {
+    where.read = req.query.read
+  }
+
   const user = await User.findByPk(req.params.id, {
     include: [
       {
@@ -39,8 +45,9 @@ router.get('/:id', async (req, res) => {
           as: 'reading_lists',
           attributes: {
             include: ['read'],
-            exclude: ['userId', 'blogId']
-          }
+            exclude: ['userId', 'blogId'],
+          },
+          where
         },
         include: [
           {
