@@ -1,0 +1,63 @@
+name: phonebook
+
+services:
+  frontend:
+    build:
+      context: ./phonebook-frontend
+      dockerfile: dev.Dockerfile
+    container_name: phonebook-frontend-dev
+    ports:
+      - 5173:5173
+    volumes:
+      - ./phonebook-frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - BACKEND_URL=http://backend:3000
+    command: npm run dev
+    depends_on:
+      - backend
+  
+  backend:
+    build:
+      context: ./phonebook-backend
+      dockerfile: dev.Dockerfile
+    container_name: phonebook-backend-dev
+    ports:
+      - 3000:3000
+    volumes:
+      - ./phonebook-backend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - MONGO_URL=mongodb://root:example@mongo:27017/the_database?authSource=admin
+    command: npm run dev
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: mongo-dev
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: the_database
+    volumes:
+      - mongo-data:/data/db
+      - ./phonebook-backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  nginx:
+    image: nginx
+    container_name: nginx-dev
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  mongo-data:
