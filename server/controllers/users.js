@@ -3,7 +3,6 @@ import { Router } from 'express';
 import User from '../models/user.js';
 import Blog from '../models/blog.js';
 import { isAdmin, tokenExtractor, userFinder, errorHandler } from '../util/middleware.js';
-import Team from '../models/team.js';
 import UserBlogs from '../models/user_blogs.js';
 
 const router = Router();
@@ -14,13 +13,6 @@ router.get('/', async (req, res) => {
       {
         model: Blog,
         attributes: { exclude: ['userId'] }
-      },
-      {
-        model: Team,
-        attributes: ['name', 'id'],
-        through: {
-          attributes: []
-        }
       }
     ]
   });
@@ -50,11 +42,6 @@ router.get('/:id', async (req, res) => {
             attributes: ['name']
           },
         ]
-      },
-      {
-        model: Team,
-        attributes: ['name', 'id'],
-        through: { attributes: [] }
       }
     ]
   });
