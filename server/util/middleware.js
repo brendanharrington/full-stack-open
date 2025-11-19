@@ -4,6 +4,7 @@ import { SECRET } from './config.js';
 
 import Blog from '../models/blog.js'
 import User from '../models/user.js';
+import UserBlogs from '../models/user_blogs.js';
 
 export const tokenExtractor = (req, res, next) => {
   const authorization = req.get('authorization');
@@ -58,6 +59,24 @@ export const userFinder = async (req, res, next) => {
   next()
 };
 
+export const userBlogFinder = async (req, res, next) => {
+  req.blogId = req.params.id;
+
+  const userBlog = await UserBlogs.findOne({
+    where: {
+      user_id: req.decodedToken.id,
+      blog_id: req.params.id
+    }
+  });
+
+  if (!userBlog) {
+    return next({ name: 'UserBlogError', id: req.params.id });
+  }
+
+  req.userBlog = userBlog;
+  next();
+}
+
 // eslint-disable-next-line no-unused-vars
 export const errorHandler = (err, req, res, next) => {
   switch (err.name) {
@@ -90,6 +109,12 @@ export const errorHandler = (err, req, res, next) => {
         error: 'missing permissions',
         details: `user with id ${err.id} does not have admin permissions`
       });
+
+    case 'UserBlogError':
+      return res.status(404).json({
+        error: 'user blog not found',
+        details: `user with id ${req.decodedToken.id} does not have a book with id ${req.blogId} in their reading list`
+      })
 
     default:
       console.log(err)
