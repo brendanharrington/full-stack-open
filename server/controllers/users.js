@@ -3,7 +3,7 @@ import { Router } from 'express';
 import User from '../models/user.js';
 import Blog from '../models/blog.js';
 import { isAdmin, tokenExtractor, userFinder, errorHandler } from '../util/middleware.js';
-import UserBlogs from '../models/user_blogs.js';
+// import UserBlogs from '../models/user_blogs.js';
 
 const router = Router();
 
@@ -35,7 +35,13 @@ router.get('/:id', async (req, res) => {
         model: Blog,
         as: 'marked_blogs',
         attributes: { exclude: ['userId'] },
-        through: { attributes: [] },
+        through: {
+          as: 'reading_lists',
+          attributes: {
+            include: ['read'],
+            exclude: ['userId', 'blogId']
+          }
+        },
         include: [
           {
             model: User,

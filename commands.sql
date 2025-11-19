@@ -23,3 +23,10 @@ SELECT * FROM users;
 
 DROP TABLE blogs;
 DROP TABLE users;
+
+-- lists
+
+INSERT INTO user_blogs (user_id, blog_id) VALUES (1, 1);
+INSERT INTO user_blogs (user_id, blog_id) VALUES (1, 2);
+
+SELECT * FROM user_blogs;
